@@ -676,6 +676,8 @@ class DPRunner(BaseRunner):
         if train:
             self.train()
         if eval:
+            import time
+            time.sleep(10)  # wait for file system to sync
             self.evaluate(ckpt_path=ckpt_path)
 
 

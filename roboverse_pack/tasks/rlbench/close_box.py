@@ -9,7 +9,7 @@ from metasim.task.registry import register_task
 
 from .rl_bench import RLBenchTask
 
-
+debug=True
 @register_task("rlbench.close_box", "close_box")
 class CloseBoxTask(RLBenchTask):
     max_episode_steps = 250
@@ -25,6 +25,13 @@ class CloseBoxTask(RLBenchTask):
         ],
         robots=["franka"],
     )
+    if debug:
+        scenario.sim_params.dt = 1e-3
+        scenario.decimation = 15
+        
+        # write a warning
+        import warnings
+        warnings.warn("Debugging mode is enabled.")
     traj_filepath = "roboverse_data/trajs/rlbench/close_box/v2/franka_v2.pkl.gz"
     checker = JointPosChecker(
         obj_name="box_base", joint_name="box_joint", mode="le", radian_threshold=-14 / 180 * math.pi

@@ -145,6 +145,16 @@ class BaseTaskEnv:
         # return obs, reward, terminated, time_out, info
         for callback in self.pre_physics_step_callback:
             callback(actions)
+        # """
+        # ['panda_joint1', 'panda_joint2', 'panda_joint3', 'panda_joint4', 'panda_joint5', 'panda_joint6', 'panda_joint7', 'panda_finger_joint1', 'panda_finger_joint2']
+        # The target doesn't correspond to the actual states one by one.
+        # target: ['panda_finger_joint1', 'panda_finger_joint2', 'panda_joint1', 'panda_joint2', 'panda_joint3', 'panda_joint4', 'panda_joint5', 'panda_joint6', 'panda_joint7']
+        # """
+        states_before = self.handler.get_states()
+        # print("joint 1 state", states_before.robots["franka"].joint_pos[0, 0])
+        # print("joint 1 target: ", actions[0]["franka"]["dof_pos_target"]['panda_joint1'])
+        # print("finger joint 1 state:", states_before.robots["franka"].joint_pos[0, 7])
+        # print("finger joint 1 target:", actions[0]["franka"]["dof_pos_target"]['panda_finger_joint1'])
 
         for robot in self.handler.robots:
             self.handler.set_dof_targets(actions)
@@ -152,7 +162,19 @@ class BaseTaskEnv:
         self.handler.simulate()
 
         env_states = self.handler.get_states()
-
+        states_after = self.handler.get_states()
+        # print("joint 1 state after:", states_after.robots["franka"].joint_pos[0, 0])
+        # print("joint 1 target after: ", actions[0]["franka"]["dof_pos_target"]['panda_joint1'])
+        # print("finger joint 1 state after:", states_after.robots["franka"].joint_pos[0, 7])
+        # print("finger joint 1 target after:", actions[0]["franka"]["dof_pos_target"]['panda_finger_joint1'])
+        print("---joint 1---")
+        print(f"target = {actions[0]['franka']['dof_pos_target']['panda_joint1']:.4f}, before = {states_before.robots['franka'].joint_pos[0, 2].item():.4f}, after = {states_after.robots['franka'].joint_pos[0, 2].item():.4f}")
+        print("---joint 2---")
+        print(f"target = {actions[0]['franka']['dof_pos_target']['panda_joint2']:.4f}, before = {states_before.robots['franka'].joint_pos[0, 3].item():.4f}, after = {states_after.robots['franka'].joint_pos[0, 3].item():.4f}")
+        print("---finger joint 1---")
+        print(f"target = {actions[0]['franka']['dof_pos_target']['panda_finger_joint1']:.4f}, before = {states_before.robots['franka'].joint_pos[0, 0].item():.4f}, after = {states_after.robots['franka'].joint_pos[0, 0].item():.4f}")
+        
+        import pdb; pdb.set_trace()
         for callback in self.post_physics_step_callback:
             callback(env_states)
 

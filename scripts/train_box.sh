@@ -1,0 +1,108 @@
+task_name=close_box # ['stack_cube', 'close_box']
+level=0
+config_name=dp_runner
+
+port=50010
+seed=42
+gpu=0
+obs_space=joint_pos
+act_space=joint_pos
+delta_ee=0
+eval_num_envs=1
+max_eval_instances=100
+if [ "${task_name}" = "close_box" ]; then
+  num_epochs=100            # Number of training epochs
+  eval_max_step=500
+# stack cube
+elif [ "${task_name}" = "stack_cube" ]; then
+  num_epochs=1000            # Number of training epochs
+  eval_max_step=300
+else 
+  num_epochs=100            # Number of training epochs
+  eval_max_step=100
+fi
+expert_data_num=100
+sim_set=isaacsim
+
+## Seperate training and evaluation
+train_enable=False
+eval_enable=True
+
+## Choose training or inference algorithm
+algo_choose=0  # 0: DDPM, 1: DDIM, 2: FM  3: Score-based
+
+algo_model=""
+eval_path=""
+
+home_path=/media/volume/MOL/MOL-Robotics/RoboVerse
+eval_ckpt_name=100
+debug_extra="-dt:0.001-decimation:15"
+task_extra="${task_name}_obs:${obs_space}_act:${act_space}${debug_extra}"
+
+eval_path="${home_path}/info/outputs/DP/${task_extra}/checkpoints/${eval_ckpt_name}.ckpt"
+
+
+case $algo_choose in
+    0)
+        # DDPM settings
+        export algo_model="ddpm_model"
+        if [ "${task_name}" = "stack_cube" ]; then
+          run_id="2025.11.03/22.07.18_stack_cube_obs:joint_pos_act:joint_pos/checkpoints/100.ckpt"
+        elif [ "${task_name}" = "close_box" ]; then
+          run_id="2025.10.28/08.05.06_close_box_obs:joint_pos_act:joint_pos/checkpoints/100.ckpt"
+        fi
+        # eval_path="${home_path}/info/outputs/DP/${run_id}"
+        ;;
+    1)
+        # DDIM settings
+        export algo_model="ddim_model"
+        ;;
+    2)
+        # FM settings
+        export algo_model="fm_unet_model"
+        ;;
+    3)
+        # FM DiT Settings
+        export algo_model="fm_dit_model"
+        ;;
+    4)
+        # Score-based settings
+        export algo_model="score_model"
+        ;;
+    5)
+        # VITA Settings
+        export algo_model="vita_model"
+        ;;
+    *)
+        echo "Invalid algorithm choice: $algo_choose"
+        echo "Available options: 0 (DDPM), 1 (DDIM), 2 (FM UNet), 3 (FM DiT), 4 (Score-based), 5 (VITA)"
+        exit 1
+        ;;
+esac
+echo "Selected model: $algo_model"
+echo "Checkpoint path: $eval_path"
+
+extra="obs:${obs_space}_act:${act_space}${debug_extra}"
+if [ "${delta_ee}" = 1 ]; then
+  extra="${extra}_delta"
+fi
+
+python roboverse_learn/il/dp/main.py --config-name=${config_name}.yaml \
+task_name="${task_name}_${extra}" \
+dataset_config.zarr_path="data_policy/${task_name}FrankaL${level}_${extra}_${expert_data_num}.zarr" \
+train_config.training_params.seed=${seed} \
+train_config.training_params.num_epochs=${num_epochs} \
+train_config.training_params.device=${gpu} \
+eval_config.policy_runner.obs.obs_type=${obs_space} \
+eval_config.policy_runner.action.action_type=${act_space} \
+eval_config.policy_runner.action.delta=${delta_ee} \
+eval_config.eval_args.task=${task_name} \
+eval_config.eval_args.max_step=${eval_max_step} \
+eval_config.eval_args.num_envs=${eval_num_envs} \
+eval_config.eval_args.max_demo=${max_eval_instances} \
+eval_config.eval_args.sim=${sim_set} \
+train_enable=${train_enable} \
+eval_enable=${eval_enable} \
+eval_path=${eval_path} \
+
+# eval_config.eval_args.random.level=${level} \

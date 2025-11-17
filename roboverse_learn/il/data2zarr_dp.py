@@ -25,9 +25,15 @@ def main():
         help="The name of the task (e.g., StackCube_franka)",
     )
     parser.add_argument(
-        "--expert_data_num",
+        "--max_demo_idx",
         type=int,
         default=200,
+        help="Maximum demo index (e.g., 200)",
+    )
+    parser.add_argument(
+        "--expert_data_num",
+        type=int,
+        default=None,
         help="Number of episodes to process (e.g., 200)",
     )
     parser.add_argument(
@@ -70,7 +76,7 @@ def main():
     args = parser.parse_args()
 
     task_name = args.task_name
-    num = args.expert_data_num
+    num = args.max_demo_idx  
     load_dir = args.metadata_dir
     downsample_ratio = args.downsample_ratio
 
@@ -96,7 +102,7 @@ def main():
     episode_ends_arrays = []
     total_count = 0
     current_batch = 0
-    # current_demo_index = 0
+    current_demo_index = 0
 
     if args.joint_pos_padding > 0 and args.observation_space == "ee" and args.action_space == "ee":
         logging.warning("Padding is not supported for ee observation and action spaces.")
@@ -105,7 +111,6 @@ def main():
         demo_id = str(current_ep).zfill(4)
         demo_dir = os.path.join(load_dir, f"demo_{demo_id}")
         # current_ep += 1
-
         if not os.path.isdir(demo_dir):
             print(f"Skipping episode {current_ep} as directory {demo_dir} does not exist.")
             continue
@@ -123,6 +128,7 @@ def main():
             with open(os.path.join(demo_dir, "metadata.json"), encoding="utf-8") as f:
                 # print("metadata load dir:", demo_dir)
                 metadata = json.load(f)
+        current_demo_index += 1
 
         data_length = len(metadata["joint_qpos"])
         rgbs = iio.mimread(os.path.join(demo_dir, "rgb.mp4"))
@@ -212,7 +218,9 @@ def main():
         episode_ends_arrays.append(total_count)
 
         # Write to ZARR if batch is full or if this is the last episode
-        if (current_ep + 1) % batch_size == 0 or (current_ep + 1) == num:
+        if (current_ep + 1) % batch_size == 0 or current_demo_index == args.expert_data_num or (current_ep + 1) == num:
+        # if (current_ep + 1) % batch_size == 0 or (current_ep + 1) == num:
+            
             # Convert arrays to NumPy and format head_camera
             head_camera_arrays = np.array(head_camera_arrays)
             head_camera_arrays = np.moveaxis(head_camera_arrays, -1, 1)  # NHWC -> NCHW
@@ -270,7 +278,11 @@ def main():
             state_arrays = []
             episode_ends_arrays = []
             current_batch += 1
-
+        if current_demo_index == args.expert_data_num:
+            print(f"Successfully loaded {current_demo_index} demos.")
+            break
+    if args.expert_data_num is not None and current_demo_index < args.expert_data_num:
+        print(f"Warning: Only {current_demo_index} demos were found, less than the requested {args.expert_data_num} demos.")
     # Save metadata to a JSON file
     metadata = {
         "observation_space": args.observation_space,
@@ -278,7 +290,8 @@ def main():
         "delta_ee": args.delta_ee,
         "joint_pos_padding": args.joint_pos_padding,
         "task_name": args.task_name,
-        "num_episodes": args.expert_data_num,
+        # "num_episodes": args.expert_data_num,
+        "num_episodes": current_demo_index,
         "downsample_ratio": args.downsample_ratio,
     }
 

@@ -697,6 +697,7 @@ class DemoIndexer:
                 tot_success += 1
             else:
                 tot_give_up += 1
+            import pdb; pdb.set_trace()
             self.pbar.set_description(f"Frame {global_step} Success {tot_success} Giveup {tot_give_up}")
             self.pbar.update(1)
             log.info(f"Demo {self._next_idx} already exists, skipping...")
@@ -791,7 +792,8 @@ def main():
     demo_idxs = []
     for demo_idx in range(env.handler.num_envs):
         demo_idxs.append(demo_indexer.next_idx)
-        demo_indexer.move_on()
+        # demo_indexer.move_on()
+        demo_indexer._skip_if_should()
     log.info(f"Initialize with demo idxs: {demo_idxs}")
 
     ## Apply initial randomization
