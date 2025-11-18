@@ -501,7 +501,12 @@ class DPRunner(BaseRunner):
         num_envs: int = args.num_envs
         log.info(f"Using GPU device: {args.gpu_id}")
         task_cls = get_task_class(args.task)
-        dp_camera = True
+        if args.task == 'stack_cube':
+            dp_camera = True
+        elif args.task == 'close_box':
+            dp_camera = False
+        else:
+            dp_camera = True
         if dp_camera:
             import warnings
             warnings.warn("Using dp camera position!")

@@ -679,7 +679,12 @@ class DemoIndexer:
 def main():
     global global_step, tot_success, tot_give_up
     task_cls = get_task_class(args.task)
-    dp_camera = True
+    if args.task == 'stack_cube':
+        dp_camera = True
+    elif args.task == 'close_box':
+        dp_camera = False
+    else:
+        dp_camera = True
     if dp_camera:
         import warnings
         warnings.warn("Using dp camera position!")
