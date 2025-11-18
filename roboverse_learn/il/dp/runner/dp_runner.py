@@ -467,6 +467,7 @@ class DPRunner(BaseRunner):
                     (self.epoch + 1) % cfg.train_config.training_params.checkpoint_every
                 ) == 0 or self.epoch + 1 >= cfg.train_config.training_params.num_epochs:
                     # checkpointing
+                    print(f"saving checkpoint of epoch {self.epoch + 1} to {self.output_dir}")
                     save_name = pathlib.Path(self.cfg.dataset_config.zarr_path).stem
                     self.save_checkpoint(
                         cfg.checkpoint.save_root_dir
@@ -500,12 +501,18 @@ class DPRunner(BaseRunner):
         num_envs: int = args.num_envs
         log.info(f"Using GPU device: {args.gpu_id}")
         task_cls = get_task_class(args.task)
-
+        dp_camera = True
+        if dp_camera:
+            import warnings
+            warnings.warn("Using dp camera position!")
+            dp_pos = (1.0, 0.0, 0.75)
+        else:
+            dp_pos = (1.5, 0.0, 1.5)
         camera = PinholeCameraCfg(
             name="camera0",
-            pos=(1.5, 0, 1.5),
-            # dp pos
-            # pos=(1.0, 0.0, 0.75),
+            # pos=(1.5, 0, 1.5),
+            # dp camera pos
+            pos=dp_pos,
             look_at=(0.0, 0.0, 0.0)
         )
 
@@ -546,6 +553,7 @@ class DPRunner(BaseRunner):
         args.checkpoint_path = checkpoint
         ckpt_name = args.checkpoint_path.name + "_" + time_str
         ckpt_name = f"{args.task}/{args.algo}/{args.robot}/{ckpt_name}"
+        os.makedirs(f"tmp/{ckpt_name}", exist_ok=True)
         runnerCls = get_runner(args.algo)
         policyRunner: BaseEvalRunner = runnerCls(
             self,
@@ -619,8 +627,8 @@ class DPRunner(BaseRunner):
                     "rgb": obs.cameras["camera0"].rgb,
                     "joint_qpos": obs.robots[args.robot].joint_pos,
                 }
-                if len(images_list) == 0:
-                    iio.imwrite(f"tmp/{ckpt_name}/picture_{demo_start_idx}.png", np.array(new_obs["rgb"].cpu()).squeeze(0))
+                # if len(images_list) == 0:
+                #     iio.imwrite(f"tmp/{ckpt_name}/picture_{demo_start_idx}.png", np.array(new_obs["rgb"].cpu()).squeeze(0))
                 images_list.append(np.array(new_obs["rgb"].cpu()))
                 action = policyRunner.get_action(new_obs)
 
@@ -637,7 +645,7 @@ class DPRunner(BaseRunner):
             SuccessEnd = success.tolist()
             total_success += SuccessOnce.count(True)
             total_completed += len(SuccessOnce)
-            os.makedirs(f"tmp/{ckpt_name}", exist_ok=True)
+
             for i, demo_idx in enumerate(range(demo_start_idx, demo_end_idx)):
                 demo_idx_str = str(demo_idx).zfill(4)
                 if i % args.save_video_freq == 0:

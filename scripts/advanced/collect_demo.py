@@ -666,7 +666,6 @@ class DemoIndexer:
                 tot_success += 1
             else:
                 tot_give_up += 1
-            import pdb; pdb.set_trace()
             self.pbar.set_description(f"Frame {global_step} Success {tot_success} Giveup {tot_give_up}")
             self.pbar.update(1)
             log.info(f"Demo {self._next_idx} already exists, skipping...")
@@ -680,11 +679,18 @@ class DemoIndexer:
 def main():
     global global_step, tot_success, tot_give_up
     task_cls = get_task_class(args.task)
+    dp_camera = True
+    if dp_camera:
+        import warnings
+        warnings.warn("Using dp camera position!")
+        dp_pos = (1.0, 0.0, 0.75)
+    else:
+        dp_pos = (1.5, 0.0, 1.5)
     camera = PinholeCameraCfg(
         data_types=["rgb", "depth"], 
-        pos=(1.5, 0.0, 1.5), 
-        # dp pos
-        # pos=(1.0, 0.0, 0.75),
+        # pos=(1.5, 0.0, 1.5), 
+        # dp camera pos
+        pos=dp_pos,
         look_at=(0.0, 0.0, 0.0))
     scenario = task_cls.scenario.update(
         robots=[args.robot],
@@ -766,8 +772,7 @@ def main():
     demo_idxs = []
     for demo_idx in range(env.handler.num_envs):
         demo_idxs.append(demo_indexer.next_idx)
-        # demo_indexer.move_on()
-        demo_indexer._skip_if_should()
+        demo_indexer.move_on()
     log.info(f"Initialize with demo idxs: {demo_idxs}")
 
     ## Apply initial randomization
