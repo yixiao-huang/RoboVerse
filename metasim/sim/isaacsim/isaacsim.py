@@ -196,21 +196,21 @@ class IsaacsimHandler(BaseSimHandler):
 
         return super().launch()
 
-    def close(self) -> None:
-        log.info("close Isaacsim Handler")
-        if not self._is_closed:
-            self.simulation_app.close()
-            if self.scene is not None:
-                del self.scene
-            if self.sim is not None:
-                del self.sim
-            if self.simulation_app is not None:
-                del self.simulation_app
-            self._is_closed = True
+    # def close(self) -> None:
+    #     log.info("close Isaacsim Handler")
+    #     if not self._is_closed:
+    #         self.simulation_app.close()
+    #         if self.scene is not None:
+    #             del self.scene
+    #         if self.sim is not None:
+    #             del self.sim
+    #         if self.simulation_app is not None:
+    #             del self.simulation_app
+    #         self._is_closed = True
 
-    def __del__(self):
-        """Cleanup for the environment."""
-        self.close()
+    # def __del__(self):
+    #     """Cleanup for the environment."""
+    #     self.close()
 
     def _set_states(self, states: list[DictEnvState] | TensorState, env_ids: list[int] | None = None) -> None:
         # if states is list[DictEnvState], iterate over it and set state
@@ -733,10 +733,39 @@ class IsaacsimHandler(BaseSimHandler):
             debug_vis=False,
         )
         terrain_config.num_envs = self.scene.cfg.num_envs
-        terrain_config.env_spacing = self.scene.cfg.env_spacing
+        # terrain_config.env_spacing = self.scene.cfg.env_spacing
+        terrain_config.env_spacing = 5
 
         self.terrain = terrain_config.class_type(terrain_config)
         self.terrain.env_origins = self.terrain.terrain_origins
+        from metasim.randomization.scene_randomizer import SceneRandomizer
+        from metasim.randomization.presets.scene_presets import ScenePresets, SceneRandomCfg, SceneGeometryCfg, SceneMaterialPoolCfg
+        scene_cfg = SceneRandomCfg(
+            floor=SceneGeometryCfg(
+                enabled=True,
+                size=(100, 100, 0.0001),
+                position=(0.0, 0.0, 0.00001),  # Slightly above z=0 to avoid z-fighting
+                material_randomization=True,
+            ),
+            floor_materials=SceneMaterialPoolCfg(
+                material_paths=["roboverse_data/materials/arnold/Wood/Ash.mdl"],
+                selection_strategy="sequential",
+            ),
+        )
+        scene_rand = SceneRandomizer(scene_cfg)
+        scene_rand.bind_handler(self)
+        scene_rand()
+
+    # import isaacsim.core.utils.prims as prim_utils
+        # from isaacsim.core.prims import SingleGeometryPrim as GeometryPrim
+
+        # from .utils.custom_cuboid import FixedCuboid
+        # from .utils.ground_util import GROUND_PRIM_PATH
+
+        ## Move ground down
+        # ground_prim = GeometryPrim(GROUND_PRIM_PATH, name="ground_prim")
+        # ground_prim.set_world_pose(position=(0.0, 0.0, -0.75), orientation=(1.0, 0.0, 0.0, 0.0))
+
 
     def _load_scene(self) -> None:
         """Load scene from SceneCfg configuration.
@@ -977,7 +1006,8 @@ class IsaacsimHandler(BaseSimHandler):
 
         # Create Isaac Lab dome light configuration
         isaac_light_cfg = sim_utils.DomeLightCfg(
-            intensity=light_cfg.intensity,
+            intensity=light_cfg.intensity * 2, # HARD CODE TO MATCH LIGHTING LEVELS
+            # intensity=light_cfg.intensity,
             color=light_cfg.color,
         )
 

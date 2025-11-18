@@ -504,6 +504,8 @@ class DPRunner(BaseRunner):
         camera = PinholeCameraCfg(
             name="camera0",
             pos=(1.5, 0, 1.5),
+            # dp pos
+            # pos=(1.0, 0.0, 0.75),
             look_at=(0.0, 0.0, 0.0)
         )
 
@@ -593,6 +595,8 @@ class DPRunner(BaseRunner):
             obs, extras = env.reset(states=init_states[demo_start_idx:demo_end_idx])
             policyRunner.reset()
             toc = time.time()
+            # reset rendering 
+            # env.handler.refresh_render()
             log.trace(f"Time to reset: {toc - tic:.2f}s")
 
             step = 0
@@ -615,7 +619,8 @@ class DPRunner(BaseRunner):
                     "rgb": obs.cameras["camera0"].rgb,
                     "joint_qpos": obs.robots[args.robot].joint_pos,
                 }
-
+                if len(images_list) == 0:
+                    iio.imwrite(f"tmp/{ckpt_name}/picture_{demo_start_idx}.png", np.array(new_obs["rgb"].cpu()).squeeze(0))
                 images_list.append(np.array(new_obs["rgb"].cpu()))
                 action = policyRunner.get_action(new_obs)
 
@@ -672,7 +677,7 @@ class DPRunner(BaseRunner):
         train = self.cfg.train_enable
         eval = self.cfg.eval_enable
         if not train:
-            ckpt_path = self.cfg.eval_path
+            ckpt_path = pathlib.Path(self.cfg.eval_path)
         if train:
             self.train()
         if eval:

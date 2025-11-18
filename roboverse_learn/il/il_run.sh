@@ -1,9 +1,9 @@
 #!/bin/bash
 # Try： bash roboverse_learn/il/il_run.sh --task_name_set close_box --algo_choose dp_DDPM --demo_num 100 --sim_set mujoco
 
-task_name_set="close_box" # Tasks, opts: close_box, stack_cube pick_cube
+task_name_set="stack_cube" # Tasks, opts: close_box, stack_cube pick_cube
 algo_choose="dp_DDPM"     # IL algorithm, opts: act, dp_DDPM, dp_DDIM, dp_FM_UNet, dp_FM_DiT, dp_Score, dp_VITA
-sim_set="mujoco"          # Simulator, opts: mujoco, isaacsim
+sim_set="isaacsim"          # Simulator, opts: mujoco, isaacsim
 demo_num=100              # Number of demonstration to collect, train, and eval
 
 # parse parameters
