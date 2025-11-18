@@ -680,7 +680,12 @@ class DemoIndexer:
 def main():
     global global_step, tot_success, tot_give_up
     task_cls = get_task_class(args.task)
-    camera = PinholeCameraCfg(data_types=["rgb", "depth"], pos=(1.5, 0.0, 1.5), look_at=(0.0, 0.0, 0.0))
+    camera = PinholeCameraCfg(
+        data_types=["rgb", "depth"], 
+        pos=(1.5, 0.0, 1.5), 
+        # dp pos
+        # pos=(1.0, 0.0, 0.75),
+        look_at=(0.0, 0.0, 0.0))
     scenario = task_cls.scenario.update(
         robots=[args.robot],
         scene=args.scene,
