@@ -12,20 +12,23 @@ eval_num_envs=1
 max_eval_instances=100
 if [ "${task_name}" = "close_box" ]; then
   num_epochs=100            # Number of training epochs
+  max_train_steps=250
   eval_max_step=500
 # stack cube
 elif [ "${task_name}" = "stack_cube" ]; then
-  num_epochs=1000            # Number of training epochs
-  eval_max_step=300
+  num_epochs=100            # Number of training epochs
+  max_train_steps=250
+  eval_max_step=500
 else 
   num_epochs=100            # Number of training epochs
+  max_train_steps=250
   eval_max_step=100
 fi
 expert_data_num=100
 sim_set=isaacsim
 
 ## Seperate training and evaluation
-train_enable=False
+train_enable=True
 eval_enable=True
 
 ## Choose training or inference algorithm
@@ -36,7 +39,9 @@ eval_path=""
 
 home_path=/media/volume/MOL/MOL-Robotics/RoboVerse
 eval_ckpt_name=100
-debug_extra="-dt:0.001-decimation:15"
+# debug_extra="-dt:0.001-decimation:15"
+# debug_extra="_camera"
+debug_extra=""
 task_extra="${task_name}_obs:${obs_space}_act:${act_space}${debug_extra}"
 
 eval_path="${home_path}/info/outputs/DP/${task_extra}/checkpoints/${eval_ckpt_name}.ckpt"
@@ -47,11 +52,12 @@ case $algo_choose in
         # DDPM settings
         export algo_model="ddpm_model"
         if [ "${task_name}" = "stack_cube" ]; then
-          run_id="2025.11.03/22.07.18_stack_cube_obs:joint_pos_act:joint_pos/checkpoints/100.ckpt"
+          run_id="2025.11.12/01.52.51_stack_cube_obs:joint_pos_act:joint_pos/checkpoints/200.ckpt"
+          # eval_path="${home_path}/info/outputs/DP/${run_id}"
         elif [ "${task_name}" = "close_box" ]; then
           run_id="2025.10.28/08.05.06_close_box_obs:joint_pos_act:joint_pos/checkpoints/100.ckpt"
         fi
-        # eval_path="${home_path}/info/outputs/DP/${run_id}"
+        
         ;;
     1)
         # DDIM settings
@@ -92,6 +98,7 @@ task_name="${task_name}_${extra}" \
 dataset_config.zarr_path="data_policy/${task_name}FrankaL${level}_${extra}_${expert_data_num}.zarr" \
 train_config.training_params.seed=${seed} \
 train_config.training_params.num_epochs=${num_epochs} \
+train_config.training_params.max_train_steps=${max_train_steps} \
 train_config.training_params.device=${gpu} \
 eval_config.policy_runner.obs.obs_type=${obs_space} \
 eval_config.policy_runner.action.action_type=${act_space} \
