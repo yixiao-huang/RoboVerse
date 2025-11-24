@@ -60,7 +60,12 @@ class IsaacsimHandler(BaseSimHandler):
         self._episode_length_buf = [0 for _ in range(self.num_envs)]
 
         self.scenario_cfg = scenario_cfg
-        self.physics_dt = self.scenario.sim_params.dt if self.scenario.sim_params.dt is not None else 0.01
+        # Calculate physics_dt to ensure dt * decimation = constant (0.015)
+        if self.scenario.sim_params.dt is not None:
+            self.physics_dt = self.scenario.sim_params.dt
+        else:
+            # Default: dt * decimation = 0.015
+            self.physics_dt = 0.015 / self.scenario.decimation
         self._physics_step_counter = 0
         self._is_closed = False
         self.render_interval = self.scenario.decimation  # TODO: fix hardcode
@@ -166,7 +171,8 @@ class IsaacsimHandler(BaseSimHandler):
         self._load_robots()
         self._load_sensors()
         self._load_cameras()
-        self._load_terrain()
+        if self.scenario.scene is None:
+            self._load_terrain()
         self._load_scene()
         self._load_objects()
         self._load_lights()
@@ -644,6 +650,10 @@ class IsaacsimHandler(BaseSimHandler):
                         rigid_props=rigid_props,
                         collision_props=collision_props,
                     ),
+                    init_state=RigidObjectCfg.InitialStateCfg(
+                        pos=obj.default_position,
+                        rot=obj.default_orientation,
+                    ),
                 )
             )
             return
@@ -720,7 +730,7 @@ class IsaacsimHandler(BaseSimHandler):
         raise ValueError(f"Unsupported object type: {type(obj)}")
 
     def _load_terrain(self) -> None:
-        # TODO support multiple terrains cfg
+        # # TODO support multiple terrains cfg
         import isaaclab.sim as sim_utils
         from isaaclab.terrains import TerrainImporterCfg
 
@@ -736,6 +746,7 @@ class IsaacsimHandler(BaseSimHandler):
                 restitution=0.0,
             ),
             debug_vis=False,
+            visual_material=sim_utils.MdlFileCfg(mdl_path="metasim/data/quick_start/materials/Ash.mdl"),
         )
         terrain_config.num_envs = self.scene.cfg.num_envs
         # terrain_config.env_spacing = self.scene.cfg.env_spacing
@@ -1251,7 +1262,15 @@ class IsaacsimHandler(BaseSimHandler):
         self.flush_visual_updates(settle_passes=1)
 
     def flush_visual_updates(self, *, wait_for_materials: bool = False, settle_passes: int = 2) -> None:
-        """Drive SimulationApp/scene/sensors for a few frames to settle visual state."""
+        """Drive SimulationApp/scene/sensors for a few frames to settle visual state.
+
+        Global defer mechanism: If _defer_all_visual_flushes is True, skip flush entirely.
+        This enables atomic batch randomization without intermediate rendering overhead.
+        """
+        # Check global defer flag (for batch randomization)
+        if getattr(self, "_defer_all_visual_flushes", False):
+            return  # Skip flush, will be done by batch controller
+
         passes = max(1, settle_passes)
         sim_app = getattr(self, "simulation_app", None)
         reason = "material refresh" if wait_for_materials else "visual flush"

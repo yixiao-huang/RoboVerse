@@ -8,7 +8,7 @@ num_envs=1              # Number of parallel environments
 demo_start_idx=0        # Index of the first demo to collect
 sim_set=isaacsim
 cust_name=test
-num_demo_success=100
+num_demo_success=100    # Number of successful demonstrations to collect
 
 expert_data_num=100
 

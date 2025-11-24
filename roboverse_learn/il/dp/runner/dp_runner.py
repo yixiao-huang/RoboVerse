@@ -110,7 +110,7 @@ class DomainRandomizationManager:
             # )
             ## Box
             box_mat_rand = MaterialRandomizer(
-                MaterialPresets.mdl_family_object("box_base", family="metal", randomization_mode="combined"),
+                MaterialPresets.mdl_family_object("box_base", family="metal"),
                 seed=self.cfg.seed,
             )
 
@@ -148,10 +148,7 @@ class DomainRandomizationManager:
         # 4. Initialize camera randomizer
         if self.cfg.enable:
             camera_rand = CameraRandomizer(
-                CameraPresets.surveillance_camera(
-                    self.cfg.camera_name,
-                    randomization_mode=self.cfg.camera_scenario
-                ),
+                CameraPresets.surveillance_camera(self.cfg.camera_name),
                 seed=self.cfg.seed
             )
             camera_rand.bind_handler(self.sim_handler)
@@ -509,8 +506,6 @@ class DPRunner(BaseRunner):
             dp_pos = (1.5, 0.0, 1.5)
         camera = PinholeCameraCfg(
             name="camera0",
-            # pos=(1.5, 0, 1.5),
-            # dp camera pos
             pos=dp_pos,
             look_at=(0.0, 0.0, 0.0)
         )
@@ -544,7 +539,8 @@ class DPRunner(BaseRunner):
 
         time_str = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         checkpoint = self.get_checkpoint_path()
-        checkpoint = ckpt_path if checkpoint is None else checkpoint
+        # checkpoint = ckpt_path if checkpoint is None else checkpoint
+        checkpoint = ckpt_path if ckpt_path is None else checkpoint
         if checkpoint is None:
             raise ValueError(
                 "No checkpoint found, please provide a valid checkpoint path."
@@ -612,6 +608,7 @@ class DPRunner(BaseRunner):
             TimeOut = [False] * num_envs
             images_list = []
             print(policyRunner.policy_cfg)
+            # env.handler.refresh_render()
 
             dynamic_dr_interval = 20
             while step < MaxStep:
