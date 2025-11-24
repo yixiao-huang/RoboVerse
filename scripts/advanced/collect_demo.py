@@ -55,6 +55,9 @@ class Args:
     """Rollout unfinished and failed trajectories"""
     renderer: Literal["isaaclab", "mujoco", "isaacgym", "genesis", "pybullet", "sapien2", "sapien3"] = "mujoco"
 
+    ## Camera options
+    dp_camera: bool = False 
+    """Whether to use dp camera position"""
     ## Domain randomization options
     enable_randomization: bool = False
     """Enable domain randomization during demo collection"""
@@ -679,13 +682,9 @@ class DemoIndexer:
 def main():
     global global_step, tot_success, tot_give_up
     task_cls = get_task_class(args.task)
-    if args.task == 'stack_cube':
-        dp_camera = True
-    elif args.task == 'close_box':
-        dp_camera = False
-    else:
-        dp_camera = True
-    if dp_camera:
+    print("dp camera is ", args.dp_camera)
+    import pdb; pdb.set_trace()
+    if args.dp_camera:
         import warnings
         warnings.warn("Using dp camera position!")
         dp_pos = (1.0, 0.0, 0.75)

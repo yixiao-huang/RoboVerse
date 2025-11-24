@@ -214,7 +214,6 @@ class DPRunner(BaseRunner):
         torch.manual_seed(seed)
         np.random.seed(seed)
         random.seed(seed)
-
         # configure model
         self.model = hydra.utils.instantiate(cfg.model_config)
 
@@ -242,7 +241,6 @@ class DPRunner(BaseRunner):
             if lastest_ckpt_path.is_file():
                 print(f"Resuming from checkpoint {lastest_ckpt_path}")
                 self.load_checkpoint(path=lastest_ckpt_path)
-
         # configure dataset
         dataset = hydra.utils.instantiate(cfg.dataset_config)
         train_dataloader = create_dataloader(dataset, **cfg.train_config.dataloader)
@@ -501,13 +499,9 @@ class DPRunner(BaseRunner):
         num_envs: int = args.num_envs
         log.info(f"Using GPU device: {args.gpu_id}")
         task_cls = get_task_class(args.task)
-        if args.task == 'stack_cube':
-            dp_camera = True
-        elif args.task == 'close_box':
-            dp_camera = False
-        else:
-            dp_camera = True
-        if dp_camera:
+        print("dp camera is ", args.dp_camera)
+        import pdb; pdb.set_trace()
+        if args.dp_camera:
             import warnings
             warnings.warn("Using dp camera position!")
             dp_pos = (1.0, 0.0, 0.75)
