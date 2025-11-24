@@ -623,6 +623,7 @@ class DPRunner(BaseRunner):
                     "rgb": obs.cameras["camera0"].rgb,
                     "joint_qpos": obs.robots[args.robot].joint_pos,
                 }
+                import pdb; pdb.set_trace()
                 # if len(images_list) == 0:
                 #     iio.imwrite(f"tmp/{ckpt_name}/picture_{demo_start_idx}.png", np.array(new_obs["rgb"].cpu()).squeeze(0))
                 images_list.append(np.array(new_obs["rgb"].cpu()))

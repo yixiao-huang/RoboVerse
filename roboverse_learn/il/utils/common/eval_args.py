@@ -20,6 +20,8 @@ class Args:
     """Number of parallel environments, find a proper number for best performance on your machine"""
     sim: Literal["isaaclab", "mujoco", "isaacgym"] = "isaacsim"
     """Simulator backend"""
+    dp_camera: bool = False
+    """Whether to use DP camera settings"""
     max_demo: int | None = None
     """Maximum number of demos to collect, None for all demos"""
     headless: bool = True
