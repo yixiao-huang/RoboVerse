@@ -38,7 +38,6 @@ class RobotImageDataset(BaseImageDataset):
             # keys=['head_camera', 'front_camera', 'left_camera', 'right_camera', 'state', 'action'],
             keys=["head_camera", "state", "action"],
         )
-
         val_mask = get_val_mask(n_episodes=self.replay_buffer.n_episodes, val_ratio=val_ratio, seed=seed)
         train_mask = ~val_mask
         train_mask = downsample_mask(mask=train_mask, max_n=max_train_episodes, seed=seed)
