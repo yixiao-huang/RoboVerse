@@ -8,6 +8,7 @@ eval_args:
   num_envs: 1
   sim: "isaacsim"
   max_demo: null
+  dp_camera: False
 
 policy_runner:
   action:
