@@ -805,8 +805,8 @@ class IsaacsimHandler(BaseSimHandler):
             ),
         )
         terrain_config.num_envs = self.scene.cfg.num_envs
-        # terrain_config.env_spacing = self.scene.cfg.env_spacing
-        terrain_config.env_spacing = 5
+        terrain_config.env_spacing = self.scene.cfg.env_spacing
+        # terrain_config.env_spacing = 5
 
         self.terrain = terrain_config.class_type(terrain_config)
         self.terrain.env_origins = self.terrain.terrain_origins
