@@ -497,7 +497,6 @@ class DPRunner(BaseRunner):
         log.info(f"Using GPU device: {args.gpu_id}")
         task_cls = get_task_class(args.task)
         print("dp camera is ", args.dp_camera)
-        import pdb; pdb.set_trace()
         if args.dp_camera:
             import warnings
             warnings.warn("Using dp camera position!")

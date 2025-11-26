@@ -26,13 +26,15 @@ else
 fi
 expert_data_num=100
 sim_set=isaacsim
-
+dp_camera=True
 ## Seperate training and evaluation
 train_enable=True
-eval_enable=True
+eval_enable=False
 
 ## Choose training or inference algorithm
-algo_choose=0  # 0: DDPM, 1: DDIM, 2: FM  3: Score-based
+# Supported models:
+#   "ddpm_unet_model", "ddpm_dit_model", "ddim_unet_model", "fm_unet_model", "fm_dit_model", "score_model", "vita_model"
+algo_choose=0  
 
 algo_model=""
 eval_path=""
@@ -40,8 +42,8 @@ eval_path=""
 home_path=/media/volume/MOL/MOL-Robotics/RoboVerse
 eval_ckpt_name=100
 # debug_extra="-dt:0.001-decimation:15"
-# debug_extra="_camera"
-debug_extra=""
+debug_extra="_camera"
+# debug_extra=""
 task_extra="${task_name}_obs:${obs_space}_act:${act_space}${debug_extra}"
 
 eval_path="${home_path}/info/outputs/DP/${task_extra}/checkpoints/${eval_ckpt_name}.ckpt"
@@ -50,7 +52,7 @@ eval_path="${home_path}/info/outputs/DP/${task_extra}/checkpoints/${eval_ckpt_na
 case $algo_choose in
     0)
         # DDPM settings
-        export algo_model="ddpm_model"
+        export algo_model="ddpm_unet_model"
         if [ "${task_name}" = "stack_cube" ]; then
           run_id="2025.11.12/01.52.51_stack_cube_obs:joint_pos_act:joint_pos/checkpoints/200.ckpt"
           # eval_path="${home_path}/info/outputs/DP/${run_id}"
@@ -61,23 +63,23 @@ case $algo_choose in
         ;;
     1)
         # DDIM settings
-        export algo_model="ddim_model"
+        export algo_model="ddim_unet_model"
         ;;
     2)
         # FM settings
-        export algo_model="fm_unet_model"
+        export algo_model="dp_FM_UNet"
         ;;
     3)
         # FM DiT Settings
-        export algo_model="fm_dit_model"
+        export algo_model="dp_FM_DiT"
         ;;
     4)
         # Score-based settings
-        export algo_model="score_model"
+        export algo_model="dp_Score"
         ;;
     5)
         # VITA Settings
-        export algo_model="vita_model"
+        export algo_model="dp_VITA"
         ;;
     *)
         echo "Invalid algorithm choice: $algo_choose"
@@ -93,6 +95,7 @@ if [ "${delta_ee}" = 1 ]; then
   extra="${extra}_delta"
 fi
 
+
 python roboverse_learn/il/dp/main.py --config-name=${config_name}.yaml \
 task_name="${task_name}_${extra}" \
 dataset_config.zarr_path="data_policy/${task_name}FrankaL${level}_${extra}_${expert_data_num}.zarr" \
@@ -107,6 +110,7 @@ eval_config.eval_args.task=${task_name} \
 eval_config.eval_args.max_step=${eval_max_step} \
 eval_config.eval_args.num_envs=${eval_num_envs} \
 eval_config.eval_args.max_demo=${max_eval_instances} \
+eval_config.eval_args.dp_camera=${dp_camera} \
 eval_config.eval_args.sim=${sim_set} \
 train_enable=${train_enable} \
 eval_enable=${eval_enable} \

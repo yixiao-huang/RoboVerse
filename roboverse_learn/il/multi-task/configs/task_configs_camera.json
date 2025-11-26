@@ -1,0 +1,18 @@
+[
+  {
+    "task_name": "stack_cubeFrankaL0_obs:joint_pos_act:joint_pos_camera",
+    "max_demo_idx": 100,
+    "expert_data_num": 100,
+    "metadata_dir": "roboverse_demo/demo_isaacsim/stack_cube-test/robot-franka/success",
+    "downsample_ratio": 1,
+    "timestamp": 1764098120
+  },
+  {
+    "task_name": "close_boxFrankaL0_obs:joint_pos_act:joint_pos_camera",
+    "max_demo_idx": 100,
+    "expert_data_num": 100,
+    "metadata_dir": "roboverse_demo/demo_isaacsim/close_box-test/robot-franka/success",
+    "downsample_ratio": 1,
+    "timestamp": 1764098148
+  }
+]

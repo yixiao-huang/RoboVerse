@@ -711,8 +711,6 @@ class DemoIndexer:
 def main():
     global global_step, tot_success, tot_give_up
     task_cls = get_task_class(args.task)
-    print("dp camera is ", args.dp_camera)
-    import pdb; pdb.set_trace()
     if args.dp_camera:
         import warnings
         warnings.warn("Using dp camera position!")
@@ -805,7 +803,6 @@ def main():
         demo_idxs.append(demo_indexer.next_idx)
         demo_indexer.move_on()
     log.info(f"Initialize with demo idxs: {demo_idxs}")
-
     ## Apply initial randomization
     for env_id, demo_idx in enumerate(demo_idxs):
         randomization_manager.randomize_for_demo(demo_idx)

@@ -20,7 +20,7 @@ elif [ "${task_name}" = "stack_cube" ]; then
   max_train_steps=250
 elif [ "${task_name}" = "multitask" ]; then
   num_epochs=100            # Number of training epochs
-  max_train_steps=250
+  max_train_steps=500
 else 
   num_epochs=100            # Number of training epochs
   max_train_steps=250
@@ -45,59 +45,61 @@ train_enable=False
 eval_enable=True
 
 ## Choose training or inference algorithm
-algo_choose=0  # 0: DDPM, 1: DDIM, 2: FM  3: Score-based
+#   "ddpm_unet_model", "ddpm_dit_model", "ddim_unet_model", "fm_unet_model", "fm_dit_model", "score_model", "vita_model"
+algo_choose=0
 
-algo_model=""
+export algo_model="ddpm_unet_model"
+
 eval_path=""
 
 home_path=/media/volume/MOL/MOL-Robotics/RoboVerse
 eval_ckpt_name=100
 # debug_extra="-dt:0.001-decimation:15"
 # debug_extra="_multi_task"
-debug_extra=""
+debug_extra="_camera"
 task_extra="${task_name}_obs:${obs_space}_act:${act_space}${debug_extra}"
 
 eval_path="${home_path}/info/outputs/DP/${task_extra}/checkpoints/${eval_ckpt_name}.ckpt"
 
 
-case $algo_choose in
-    0)
-        # DDPM settings
-        export algo_model="ddpm_model"
-        if [ "${task_name}" = "stack_cube" ]; then
-          run_id="2025.11.12/01.52.51_stack_cube_obs:joint_pos_act:joint_pos/checkpoints/200.ckpt"
-          # eval_path="${home_path}/info/outputs/DP/${run_id}"
-        elif [ "${task_name}" = "close_box" ]; then
-          run_id="2025.10.28/08.05.06_close_box_obs:joint_pos_act:joint_pos/checkpoints/100.ckpt"
-        fi
+# case $algo_choose in
+#     0)
+#         # DDPM settings
+#         export algo_model="ddpm_unet_model"
+#         if [ "${task_name}" = "stack_cube" ]; then
+#           run_id="2025.11.12/01.52.51_stack_cube_obs:joint_pos_act:joint_pos/checkpoints/200.ckpt"
+#           # eval_path="${home_path}/info/outputs/DP/${run_id}"
+#         elif [ "${task_name}" = "close_box" ]; then
+#           run_id="2025.10.28/08.05.06_close_box_obs:joint_pos_act:joint_pos/checkpoints/100.ckpt"
+#         fi
         
-        ;;
-    1)
-        # DDIM settings
-        export algo_model="ddim_model"
-        ;;
-    2)
-        # FM settings
-        export algo_model="fm_unet_model"
-        ;;
-    3)
-        # FM DiT Settings
-        export algo_model="fm_dit_model"
-        ;;
-    4)
-        # Score-based settings
-        export algo_model="score_model"
-        ;;
-    5)
-        # VITA Settings
-        export algo_model="vita_model"
-        ;;
-    *)
-        echo "Invalid algorithm choice: $algo_choose"
-        echo "Available options: 0 (DDPM), 1 (DDIM), 2 (FM UNet), 3 (FM DiT), 4 (Score-based), 5 (VITA)"
-        exit 1
-        ;;
-esac
+#         ;;
+#     1)
+#         # DDIM settings
+#         export algo_model="ddim_model"
+#         ;;
+#     2)
+#         # FM settings
+#         export algo_model="fm_unet_model"
+#         ;;
+#     3)
+#         # FM DiT Settings
+#         export algo_model="fm_dit_model"
+#         ;;
+#     4)
+#         # Score-based settings
+#         export algo_model="score_model"
+#         ;;
+#     5)
+#         # VITA Settings
+#         export algo_model="vita_model"
+#         ;;
+#     *)
+#         echo "Invalid algorithm choice: $algo_choose"
+#         echo "Available options: 0 (DDPM), 1 (DDIM), 2 (FM UNet), 3 (FM DiT), 4 (Score-based), 5 (VITA)"
+#         exit 1
+#         ;;
+# esac
 echo "Selected model: $algo_model"
 echo "Checkpoint path: $eval_path"
 
@@ -108,7 +110,7 @@ fi
 
 python roboverse_learn/il/dp/main.py --config-name=${config_name}.yaml \
 task_name="${task_name}_${extra}" \
-dataset_config.zarr_path="data_policy/multitask_franka.zarr" \
+dataset_config.zarr_path="data_policy/multitask_franka${debug_extra}.zarr" \
 train_config.training_params.seed=${seed} \
 train_config.training_params.num_epochs=${num_epochs} \
 train_config.training_params.max_train_steps=${max_train_steps} \

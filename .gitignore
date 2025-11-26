@@ -104,3 +104,5 @@ id_rsa*
 
 # for test cache
 .pytest_cache/
+
+run_logs/
