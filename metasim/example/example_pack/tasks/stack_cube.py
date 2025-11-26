@@ -13,7 +13,9 @@ from metasim.utils.demo_util import get_traj
 from metasim.utils.hf_util import check_and_download_single
 from metasim.utils.state import TensorState
 
-debug=True
+debug = False
+
+
 @register_task("maniskill.stack_cube", "stack_cube")
 class StackCubeTask(BaseTaskEnv):
     """Stack a red cube on top of a blue base cube and release it."""
@@ -40,10 +42,11 @@ class StackCubeTask(BaseTaskEnv):
     if debug:
         scenario.sim_params.dt = 1e-3
         scenario.decimation = 15
-        
+
         # write a warning
-        import warnings
-        warnings.warn("Debugging mode is enabled.")
+        # import warnings
+
+        # warnings.warn("Debugging mode is enabled.")
     max_episode_steps = 250
     checker = DetectedChecker(
         obj_name="cube",

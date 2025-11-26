@@ -1,5 +1,5 @@
 task_name=multitask # ['stack_cube', 'close_box']
-eval_task=stack_cube 
+eval_task=close_box  # ['stack_cube', 'close_box']
 level=0
 config_name=dp_runner
 
@@ -21,7 +21,7 @@ elif [ "${task_name}" = "stack_cube" ]; then
 elif [ "${task_name}" = "multitask" ]; then
   num_epochs=100            # Number of training epochs
   max_train_steps=500
-else 
+else
   num_epochs=100            # Number of training epochs
   max_train_steps=250
 fi
@@ -31,9 +31,9 @@ if [ "${eval_task}" = "close_box" ]; then
 elif [ "${eval_task}" = "stack_cube" ]; then
   max_eval_instances=100
   eval_max_step=500
-else 
+else
   max_eval_instances=100
-  eval_max_step=500 
+  eval_max_step=500
 fi
 dp_camera=True
 
@@ -41,8 +41,8 @@ expert_data_num=100
 sim_set=isaacsim
 
 ## Seperate training and evaluation
-train_enable=True
-eval_enable=False
+train_enable=False
+eval_enable=True
 
 ## Choose training or inference algorithm
 #   "ddpm_unet_model", "ddpm_dit_model", "ddim_unet_model", "fm_unet_model", "fm_dit_model", "score_model", "vita_model"
@@ -72,7 +72,7 @@ eval_path="${home_path}/info/outputs/DP/${task_extra}/checkpoints/${eval_ckpt_na
 #         elif [ "${task_name}" = "close_box" ]; then
 #           run_id="2025.10.28/08.05.06_close_box_obs:joint_pos_act:joint_pos/checkpoints/100.ckpt"
 #         fi
-        
+
 #         ;;
 #     1)
 #         # DDIM settings
