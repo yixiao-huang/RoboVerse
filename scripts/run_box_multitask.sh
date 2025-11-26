@@ -3,7 +3,7 @@
 export CUDA_VISIBLE_DEVICES=0
 
 ## Parameters
-task_name_set=close_box # ['stack_cube', 'close_box']
+task_name_set=stack_cube # ['stack_cube', 'close_box']
 task_name_sets=("stack_cube" "close_box")
 random_level=0          # 0: No randomization 1: Randomize visual material 2: Randomize camera pose 3: Randomize object reflection and lighting
 num_envs=1              # Number of parallel environments
@@ -26,7 +26,7 @@ if [ "${delta_ee}" = 1 ]; then
   extra="${extra}_delta"
 fi
 
-cust_name="${cust_name}"
+cust_name="${cust_name}${debug_extra}"
 
 # python collect_demo.py \
 #   --task CloseBox \

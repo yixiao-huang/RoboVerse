@@ -41,8 +41,8 @@ expert_data_num=100
 sim_set=isaacsim
 
 ## Seperate training and evaluation
-train_enable=False
-eval_enable=True
+train_enable=True
+eval_enable=False
 
 ## Choose training or inference algorithm
 #   "ddpm_unet_model", "ddpm_dit_model", "ddim_unet_model", "fm_unet_model", "fm_dit_model", "score_model", "vita_model"
