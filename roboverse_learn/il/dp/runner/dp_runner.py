@@ -597,7 +597,7 @@ class DPRunner(BaseRunner):
             obs, extras = env.reset(states=init_states[demo_start_idx:demo_end_idx])
             policyRunner.reset()
             toc = time.time()
-            # reset rendering 
+            # reset rendering
             # env.handler.refresh_render()
             log.trace(f"Time to reset: {toc - tic:.2f}s")
 
@@ -622,7 +622,6 @@ class DPRunner(BaseRunner):
                     "rgb": obs.cameras["camera0"].rgb,
                     "joint_qpos": obs.robots[args.robot].joint_pos,
                 }
-                # import pdb; pdb.set_trace()
                 # if len(images_list) == 0:
                 #     iio.imwrite(f"tmp/{ckpt_name}/picture_{demo_start_idx}.png", np.array(new_obs["rgb"].cpu()).squeeze(0))
                 images_list.append(np.array(new_obs["rgb"].cpu()))
@@ -630,7 +629,7 @@ class DPRunner(BaseRunner):
 
                 for round_i in range(action_set_steps):
                     obs, reward, success, time_out, extras = env.step(action)
-
+                import pdb; pdb.set_trace()
                 # eval
                 SuccessOnce = [SuccessOnce[i] or success[i] for i in range(num_envs)]
                 TimeOut = [TimeOut[i] or time_out[i] for i in range(num_envs)]

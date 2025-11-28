@@ -701,6 +701,8 @@ class DemoIndexer:
 def main():
     global global_step, tot_success, tot_give_up
     task_cls = get_task_class(args.task)
+    # if args.task in {"stack_cube", "pick_cube", "pick_butter"}:
+    #     dp_camera = True
     is_libero_dataset = "libero_90" in args.task
 
     if is_libero_dataset:
@@ -711,7 +713,6 @@ def main():
         dp_pos = (1.0, 0.0, 0.75)
     else:
         dp_pos = (1.5, 0.0, 1.5)
-    camera = PinholeCameraCfg(data_types=["rgb", "depth"], pos=dp_pos, look_at=(0.0, 0.0, 0.0))
 
     # libero specific camera position
     # dp_pos = (0.8, -0, 1.6)
