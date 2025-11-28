@@ -56,7 +56,7 @@ class Args:
     renderer: Literal["isaaclab", "mujoco", "isaacgym", "genesis", "pybullet", "sapien2", "sapien3"] = "mujoco"
 
     ## Camera options
-    dp_camera: bool = False 
+    dp_camera: bool = False
     """Whether to use dp camera position"""
     ## Domain randomization options
     enable_randomization: bool = False
@@ -575,12 +575,6 @@ class DemoCollector:
             additional_str = f"-{args.cust_name}" if args.cust_name else ""
             self.base_save_dir = f"roboverse_demo/demo_{args.sim}/{TaskName}{additional_str}/robot-{args.robot}"
 
-        self.success_counter = demo_start_idx
-        self.failed_counter = demo_start_idx
-        log.info(
-            f"Initialized counters from demo_start_idx={demo_start_idx}: success={self.success_counter}, failed={self.failed_counter}"
-        )
-
     def _get_max_demo_index(self, status: str) -> int:
         status_dir = os.path.join(self.base_save_dir, status)
         if not os.path.exists(status_dir):
@@ -612,12 +606,8 @@ class DemoCollector:
         assert demo_idx in self.cache
         assert status in ["success", "failed"], f"Invalid status: {status}"
 
-        if status == "success":
-            continuous_idx = self.success_counter
-            self.success_counter += 1
-        else:  # failed
-            continuous_idx = self.failed_counter
-            self.failed_counter += 1
+        # Use demo_idx directly as continuous_idx to maintain consistency
+        continuous_idx = demo_idx
 
         save_dir = os.path.join(self.base_save_dir, status, f"demo_{continuous_idx:04d}")
         if os.path.exists(os.path.join(save_dir, "status.txt")):
@@ -654,13 +644,13 @@ def should_skip(log_dir: str, demo_idx: int):
     success_path = os.path.join(log_dir, "success", demo_name, "status.txt")
     failed_path = os.path.join(log_dir, "failed", demo_name, "status.txt")
 
-    if args.run_all:
-        return False
-
     if args.run_unfinished:
         if not os.path.exists(success_path) and not os.path.exists(failed_path):
             return False
         return True
+
+    if args.run_all:
+        return False
 
     if args.run_failed:
         if os.path.exists(success_path):
@@ -711,16 +701,23 @@ class DemoIndexer:
 def main():
     global global_step, tot_success, tot_give_up
     task_cls = get_task_class(args.task)
-    if args.dp_camera:
-        import warnings
-        warnings.warn("Using dp camera position!")
+    is_libero_dataset = "libero_90" in args.task
+
+    if is_libero_dataset:
+        dp_pos = (2.0, 0.0, 2)
+    elif args.dp_camera:
+        # import warnings
+        # warnings.warn("Using dp camera position!")
         dp_pos = (1.0, 0.0, 0.75)
     else:
         dp_pos = (1.5, 0.0, 1.5)
-    camera = PinholeCameraCfg(
-        data_types=["rgb", "depth"], 
-        pos=dp_pos,
-        look_at=(0.0, 0.0, 0.0))
+    camera = PinholeCameraCfg(data_types=["rgb", "depth"], pos=dp_pos, look_at=(0.0, 0.0, 0.0))
+
+    # libero specific camera position
+    # dp_pos = (0.8, -0, 1.6)
+    # look_at = (-2.5, 0.0, 0.0)
+
+    camera = PinholeCameraCfg(data_types=["rgb", "depth"], pos=dp_pos, look_at=(0.0, 0.0, 0.0))
     scenario = task_cls.scenario.update(
         robots=[args.robot],
         scene=args.scene,
@@ -838,9 +835,9 @@ def main():
             stop_flag = True
 
         if demo_indexer.next_idx >= max_demo:
-            log.warning(f"Reached maximum demo index ({max_demo}).")
+            if not stop_flag:
+                log.warning(f"Reached maximum demo index ({max_demo}), finishing in-flight demos.")
             stop_flag = True
-            break
 
         pbar.set_description(f"Frame {global_step} Success {tot_success} Giveup {tot_give_up}")
         actions = get_actions(all_actions, env, demo_idxs, robot)
