@@ -44,6 +44,17 @@ class Args:
     """Maximum number of steps to collect"""
     gpu_id: int = 0
     """GPU ID to use"""
+    cust_name: str | None = None
+    """Custom name for the dataset"""
+    custom_save_dir: str | None = None
+    """Custom base path for saving demos. If None, use default structure."""
+
+    # Distillation specific args
+    num_demo_success: int = 100
+    """Target number of successful demos to collect"""
+    tot_steps_after_success: int = 20
+    """Maximum number of steps to collect after success, or until run out of demo"""
+
     def __post_init__(self):
         # if self.random.table and not self.table:
         #     log.warning("Cannot enable table randomization without a table, disabling table randomization")

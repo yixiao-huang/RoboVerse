@@ -629,7 +629,6 @@ class DPRunner(BaseRunner):
 
                 for round_i in range(action_set_steps):
                     obs, reward, success, time_out, extras = env.step(action)
-                import pdb; pdb.set_trace()
                 # eval
                 SuccessOnce = [SuccessOnce[i] or success[i] for i in range(num_envs)]
                 TimeOut = [TimeOut[i] or time_out[i] for i in range(num_envs)]

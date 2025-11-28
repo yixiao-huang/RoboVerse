@@ -1,5 +1,4 @@
 
-from dp.runner.dp_runner import DPRunner
 import copy
 import datetime
 import os
@@ -14,10 +13,10 @@ import hydra
 import imageio.v2 as iio
 import numpy as np
 import torch
-import tqdm
+from tqdm.rich import tqdm_rich as tqdm
 import wandb
-from diffusion_policy.model.diffusion.ema_model import EMAModel
 from loguru import logger as log
+
 from metasim.scenario.scenario import ScenarioCfg
 from metasim.scenario.cameras import PinholeCameraCfg
 from metasim.constants import SimType
@@ -31,7 +30,6 @@ from roboverse_learn.il.utils.common.json_logger import JsonLogger
 from roboverse_learn.il.utils.common.lr_scheduler import get_scheduler
 from roboverse_learn.il.utils.common.pytorch_util import dict_apply, optimizer_to
 from torch.utils.data import DataLoader
-
 from roboverse_pack.randomization import (
     CameraPresets,
     CameraRandomizer,
@@ -43,34 +41,32 @@ from roboverse_pack.randomization import (
     ObjectRandomizer,
 )
 # from roboverse_pack.randomization.presets.light_presets import LightScenarios
-
 from metasim.task.registry import get_task_class
+from scripts.advanced.collect_demo import DemoCollector, DemoIndexer
+from scripts.advanced.collect_demo_utils import ensure_clean_state
+from metasim.utils.state import state_tensor_to_nested
 
-class DistillDPRunner(DPRunner):
-    include_keys = ["global_step", "epoch"]
 
+
+class DistillDPRunner(BaseRunner):
     def __init__(self, cfg: OmegaConf, output_dir=None):
         super().__init__(cfg, output_dir=output_dir)
 
         # set seed
-        seed = cfg.train_config.training_params.seed
+        seed = cfg.distill_config.seed
         torch.manual_seed(seed)
         np.random.seed(seed)
         random.seed(seed)
         # configure model
         self.model = hydra.utils.instantiate(cfg.model_config)
-
         self.ema_model = None
         if cfg.train_config.training_params.use_ema:
             self.ema_model = copy.deepcopy(self.model)
-
-
-
         # configure training state
-        self.global_step = 0
-        self.epoch = 0
-
-        self.distill_args = hydra.utils.instantiate(cfg.eval_config.distill_args)
+        self.optimizer = hydra.utils.instantiate(
+            cfg.train_config.optimizer, params=self.model.parameters()
+        )
+        self.distill_args = hydra.utils.instantiate(cfg.distill_config.distill_args)
 
     def distill(self, ckpt_path=None):
         args = self.distill_args
@@ -164,16 +160,225 @@ class DistillDPRunner(DPRunner):
         toc = time.time()
         log.trace(f"Time to load data: {toc - tic:.2f}s")
 
-        total_success = 0
-        total_completed = 0
+        # total_success = 0
+        # total_completed = 0
+        # global global_step, tot_success, tot_give_up
+        tot_success = 0
+        tot_give_up = 0
+        global_step = 0
         if args.max_demo is None:
             max_demos = args.task_id_range_high - args.task_id_range_low
         else:
             max_demos = args.max_demo
         max_demos = min(max_demos, num_demos)
 
-        all_episodes = {}   # Dict: env_id -> list of episodes
+        # setup collector
+        task_desc = getattr(env, 'task_desc', "")
+        if args.custom_save_dir:
+            save_root_dir = args.custom_save_dir
+        else:
+            additional_str = f"-{args.cust_name}" if args.cust_name else ""
+            save_root_dir = f"roboverse_demo/demo_{args.sim}/distill-{args.task}{additional_str}/robot-{args.robot}"
+        log.info(f"Saving demos to {save_root_dir}")
+        collector = DemoCollector(env.handler, robot, save_root_dir, task_desc)
 
+        # pbar = tqdm(total=max_demo - args.demo_start_idx, desc="Collecting demos")
+        pbar = tqdm(total=args.num_demo_success, desc="Collecting successful demos")
+
+        demo_indexer = DemoIndexer(
+            save_root_dir=save_root_dir,
+            start_idx=args.task_id_range_low,
+            end_idx=max_demos,
+            pbar=pbar,
+        )
+        demo_idxs = []
+
+        ## Apply initial randomization
+        # for env_id, demo_idx in enumerate(demo_idxs):
+        #     randomization_manager.randomize_for_demo(demo_idx)
+
+        ## Main Loop
+        stop_flag = False
+
+        # for demo_start_idx in range(
+        #     args.task_id_range_low, args.task_id_range_low + max_demos, num_envs
+        # ):
+        while not stop_flag:
+            if tot_success >= args.num_demo_success:
+                log.info(f"Reached target number of successful demos ({args.num_demo_success}).")
+                stop_flag = True
+
+            if demo_indexer.next_idx >= max_demos:
+                if not stop_flag:
+                    log.warning(f"Reached maximum demo index ({max_demos}), finishing in-flight demos.")
+                stop_flag = True
+
+            # demo_end_idx = min(demo_start_idx + num_envs, num_demos)
+            # current_demo_idxs = list(range(demo_start_idx, demo_end_idx))
+            for demo_idx in range(env.handler.num_envs):
+                demo_idxs.append(demo_indexer.next_idx)
+                demo_indexer.move_on()
+            log.info(f"Collecting rollouts with demo idxs: {demo_idxs}")
+            ## Randomize environment for current batch of demos
+            # if self.randomization_manager is not None:
+            #     for demo_idx in current_demo_idxs:
+            #         self.randomization_manager.randomize_for_demo(demo_idx)
+
+
+            ## Reset before first step
+            tic = time.time()
+            obs, extras = env.reset(states=[init_states[demo_idx] for demo_idx in demo_idxs])
+
+            ## Wait for environment to stabilize after reset (before counting demo steps)
+            # For initial setup, we can't validate individual states easily, so just ensure stability
+            ensure_clean_state(env.handler)
+            ## Reset episode step counters AFTER stabilization
+            # this is only used for checking timeouts in some envs
+            if hasattr(env, "_episode_steps"):
+                for env_id in range(env.handler.num_envs):
+                    env._episode_steps[env_id] = 0
+            ## Now record the clean, stabilized initial state
+            obs = env.handler.get_states()
+            obs = state_tensor_to_nested(env.handler, obs)
+            for env_id, demo_idx in enumerate(demo_idxs):
+                log.info(f"Starting Demo {demo_idx} in Env {env_id}")
+                collector.create(demo_idx, obs[env_id])
+            # reset policy runner state
+            policyRunner.reset()
+            toc = time.time()
+            # reset rendering
+            # env.handler.refresh_render()
+            log.trace(f"Time to reset: {toc - tic:.2f}s")
+
+            step = 0
+            MaxStep = args.max_step
+            ## State variables
+            SuccessOnce = [False] * num_envs
+            TimeOut = [False] * num_envs
+            failure_count = [0] * env.handler.num_envs
+            steps_after_success = [0] * env.handler.num_envs
+            finished = [False] * env.handler.num_envs
+
+            images_list = []
+            print(policyRunner.policy_cfg)
+
+
+            while step < MaxStep:
+                log.debug(f"Step {step}")
+
+                ## DR after dynamic_dr_interval steps
+                # if self.randomization_manager is not None and step % dynamic_dr_interval == 0 and step > 0:
+                #     log.info(f"Step {step}: Executing dynamic domain randomization")
+                #     self.randomization_manager.randomize_for_demo(demo_idx=demo_start_idx + step//dynamic_dr_interval)
+                new_obs = {
+                    "rgb": obs.cameras["camera0"].rgb,
+                    "joint_qpos": obs.robots[args.robot].joint_pos,
+                }
+                # import pdb; pdb.set_trace()
+                # if len(images_list) == 0:
+                #     iio.imwrite(f"tmp/{ckpt_name}/picture_{demo_start_idx}.png", np.array(new_obs["rgb"].cpu()).squeeze(0))
+                images_list.append(np.array(new_obs["rgb"].cpu()))
+                action = policyRunner.get_action(new_obs)
+                for round_i in range(action_set_steps):
+                    obs, reward, success, time_out, extras = env.step(action)
+
+                # actions = get_actions(all_actions, env, demo_idxs, robot)
+                # obs, reward, success, time_out, extras = env.step(actions)
+                obs = state_tensor_to_nested(env.handler, obs)
+                # run_out = get_run_out(all_actions, env, demo_idxs)
+
+                for env_id in range(env.handler.num_envs):
+                    if finished[env_id]:
+                        continue
+
+                    demo_idx = demo_idxs[env_id]
+                    collector.add(demo_idx, obs[env_id])
+
+                for env_id in success.nonzero().squeeze(-1).tolist():
+                    if finished[env_id]:
+                        continue
+
+                    demo_idx = demo_idxs[env_id]
+                    if steps_after_success[env_id] == 0:
+                        log.info(f"Demo {demo_idx} in Env {env_id} succeeded!")
+                        tot_success += 1
+                        pbar.update(1)
+                        pbar.set_description(f"Frame {global_step} Success {tot_success} Giveup {tot_give_up}")
+
+                    if steps_after_success[env_id] < args.tot_steps_after_success:
+                        steps_after_success[env_id] += 1
+                    else:
+                        steps_after_success[env_id] = 0
+                        collector.save(demo_idx, status="success")
+                        collector.delete(demo_idx)
+
+                        # if (not stop_flag) and (demo_indexer.next_idx < max_demos):
+                        #     new_demo_idx = demo_indexer.next_idx
+                        #     demo_idxs[env_id] = new_demo_idx
+                        #     log.info(f"Transitioning Env {env_id}: Demo {demo_idx} to Demo {new_demo_idx}")
+
+                        #     randomization_manager.randomize_for_demo(new_demo_idx)
+                        #     force_reset_to_state(env, init_states[new_demo_idx], env_id)
+
+                        #     obs = env.handler.get_states()
+                        #     obs = state_tensor_to_nested(env.handler, obs)
+                        #     collector.create(new_demo_idx, obs[env_id])
+                        #     demo_indexer.move_on()
+                        #     run_out[env_id] = False
+                        # else:
+                        finished[env_id] = True
+
+                for env_id in time_out.nonzero().squeeze(-1).tolist():
+                # for env_id in (time_out | torch.tensor(run_out, device=time_out.device)).nonzero().squeeze(-1).tolist():
+                    if finished[env_id]:
+                        continue
+
+                    demo_idx = demo_idxs[env_id]
+                    log.info(f"Demo {demo_idx} in Env {env_id} timed out!")
+                    collector.save(demo_idx, status="failed")
+                    collector.delete(demo_idx)
+                    # failure_count[env_id] += 1
+
+                    # if failure_count[env_id] < try_num:
+                    #     log.info(f"Demo {demo_idx} failed {failure_count[env_id]} times, retrying...")
+                    #     randomization_manager.randomize_for_demo(demo_idx)
+                    #     force_reset_to_state(env, init_states[demo_idx], env_id)
+
+                    #     obs = env.handler.get_states()
+                    #     obs = state_tensor_to_nested(env.handler, obs)
+                    #     collector.create(demo_idx, obs[env_id])
+                    # else:
+                    log.error(f"Demo {demo_idx} failed too many times, giving up")
+                    # failure_count[env_id] = 0
+                    tot_give_up += 1
+                    # pbar.update(1)
+                    pbar.set_description(f"Frame {global_step} Success {tot_success} Giveup {tot_give_up}")
+
+                    # if demo_indexer.next_idx < max_demo:
+                    #     new_demo_idx = demo_indexer.next_idx
+                    #     demo_idxs[env_id] = new_demo_idx
+                    #     randomization_manager.randomize_for_demo(new_demo_idx)
+                    #     force_reset_to_state(env, init_states[new_demo_idx], env_id)
+
+                    #     obs = env.handler.get_states()
+                    #     obs = state_tensor_to_nested(env.handler, obs)
+                    #     collector.create(new_demo_idx, obs[env_id])
+                    #     demo_indexer.move_on()
+                    # else:
+                    finished[env_id] = True
+
+            global_step += 1
+
+        log.info("Finalizing")
+        collector.final()
+        env.close()
+
+    def run(self, ckpt_path=None):
+        if ckpt_path is None:
+            ckpt_path = pathlib.Path(self.cfg.distill_config.ckpt_path)
+        self.distill(ckpt_path=ckpt_path)
+
+    def eval(self):
         for demo_start_idx in range(
             args.task_id_range_low, args.task_id_range_low + max_demos, num_envs
         ):
@@ -307,7 +512,7 @@ class DistillDPRunner(DPRunner):
                     f.write(
                         f"Cumulative Average Success Rate: {total_success / total_completed:.4f}\n"
                     )
-                if SuccessEnd[i]:
+                if SuccessEnd[i] and steps_after_success[i] == 0:
                     # saving success trajectory
                     episode_data = {
                         "init_state": current_episode_init_state[i],
@@ -333,3 +538,13 @@ class DistillDPRunner(DPRunner):
             f.write(f"Average Average Success Rate: {total_success / total_completed:.4f}\n")
             f.write(f"Domain Randomization Config: {self.dr_cfg}\n")  # save DR config
         env.close()
+
+
+# @hydra.main(
+#     version_base=None,
+#     config_path=str(pathlib.Path(__file__).parent.parent.joinpath("config")),
+#     config_name=pathlib.Path(__file__).stem,
+# )
+# def main(cfg):
+#     workspace = DistillDPRunner(cfg)
+#     workspace.run()
