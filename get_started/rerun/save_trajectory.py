@@ -7,7 +7,7 @@ This example demonstrates:
 
 Usage:
     python get_started/rerun/save_trajectory.py --sim mujoco --output trajectory.rrd
-    
+
     # Replay the saved recording:
     rerun trajectory.rrd
 """
@@ -313,4 +313,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

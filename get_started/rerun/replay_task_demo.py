@@ -127,8 +127,7 @@ def get_actions(all_actions, action_idx: int, num_envs: int):
     """Get actions for current step across all environments."""
     envs_actions = all_actions[:num_envs]
     return [
-        env_actions[action_idx] if action_idx < len(env_actions) else env_actions[-1]
-        for env_actions in envs_actions
+        env_actions[action_idx] if action_idx < len(env_actions) else env_actions[-1] for env_actions in envs_actions
     ]
 
 
@@ -274,4 +273,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

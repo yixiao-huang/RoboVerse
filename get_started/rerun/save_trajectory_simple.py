@@ -5,7 +5,7 @@ It generates random/sinusoidal joint motions directly.
 
 Usage:
     python get_started/rerun/save_trajectory_simple.py --sim mujoco --output trajectory.rrd
-    
+
     # Replay the saved recording:
     rerun trajectory.rrd
 """
@@ -117,12 +117,12 @@ def download_urdf_files(scenario):
 
 def generate_franka_joint_targets(step: int, num_steps: int, motion_type: str) -> dict:
     """Generate joint targets for Franka robot without IK solver.
-    
+
     Args:
         step: Current step number
         num_steps: Total number of steps
         motion_type: "sinusoidal" or "random"
-        
+
     Returns:
         Dictionary mapping joint names to target positions
     """
@@ -136,7 +136,7 @@ def generate_franka_joint_targets(step: int, num_steps: int, motion_type: str) -
         "panda_joint6": (-0.0175, 3.7525),
         "panda_joint7": (-2.8973, 2.8973),
     }
-    
+
     # Default rest positions
     rest_positions = {
         "panda_joint1": 0.0,
@@ -147,11 +147,11 @@ def generate_franka_joint_targets(step: int, num_steps: int, motion_type: str) -
         "panda_joint6": 1.570796,
         "panda_joint7": 0.785398,
     }
-    
+
     t = step / num_steps  # Normalized time [0, 1]
-    
+
     targets = {}
-    
+
     if motion_type == "sinusoidal":
         # Smooth sinusoidal motion around rest positions
         # Each joint oscillates with different frequencies and phases
@@ -160,28 +160,29 @@ def generate_franka_joint_targets(step: int, num_steps: int, motion_type: str) -
             amplitude = min(0.5, (upper - lower) * 0.15)  # Small amplitude for safety
             frequency = 1.0 + i * 0.3  # Different frequency for each joint
             phase = i * 0.5  # Phase offset
-            
+
             targets[joint_name] = rest + amplitude * math.sin(2 * math.pi * frequency * t + phase)
-    
+
     elif motion_type == "random":
         # Random walk around rest positions
         import random
+
         random.seed(step)  # Reproducible random motion
-        
+
         for joint_name, (lower, upper) in joint_limits.items():
             rest = rest_positions[joint_name]
             # Random offset within 20% of range, smoothed
             offset_range = (upper - lower) * 0.1
             offset = random.uniform(-offset_range, offset_range)
-            
+
             # Smooth it by mixing with rest position based on time
             smooth_factor = 0.5 + 0.5 * math.sin(2 * math.pi * t)
             targets[joint_name] = rest + offset * smooth_factor
-    
+
     # Keep fingers at fixed position
     targets["panda_finger_joint1"] = 0.04
     targets["panda_finger_joint2"] = 0.04
-    
+
     return targets
 
 
@@ -304,16 +305,16 @@ def main():
     log.info("Starting trajectory recording...")
 
     robot = scenario.robots[0]
-    
+
     for step in range(args.num_steps):
         visualizer.set_time(step)
 
         # Generate joint targets directly (no IK needed)
         joint_targets = generate_franka_joint_targets(step, args.num_steps, args.motion_type)
-        
+
         # Convert to action format expected by handler (needs "dof_pos_target" key)
         actions = {robot.name: {"dof_pos_target": joint_targets}}
-        
+
         handler.set_dof_targets(actions)
         handler.simulate()
         obs = handler.get_states(mode="tensor")
@@ -352,4 +353,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
