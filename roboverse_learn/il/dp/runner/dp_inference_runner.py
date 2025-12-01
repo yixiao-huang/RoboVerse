@@ -102,7 +102,8 @@ class DistillDPRunner(BaseRunner):
             simulator=args.sim,
             num_envs=args.num_envs,
             headless=args.headless,
-            cameras=[camera]
+            cameras=[camera],
+            env_spacing=args.env_spacing,
         )
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         tic = time.time()
@@ -135,7 +136,7 @@ class DistillDPRunner(BaseRunner):
         args.checkpoint_path = checkpoint
         ckpt_name = args.checkpoint_path.name + "_" + time_str
         ckpt_name = f"{args.task}/{args.algo}/{args.robot}/{ckpt_name}"
-        os.makedirs(f"tmp/{ckpt_name}", exist_ok=True)
+        # os.makedirs(f"tmp/{ckpt_name}", exist_ok=True)
         runnerCls = get_runner(args.algo)
         policyRunner: BaseEvalRunner = runnerCls(
             self,
@@ -177,9 +178,11 @@ class DistillDPRunner(BaseRunner):
         if args.custom_save_dir:
             save_root_dir = args.custom_save_dir
         else:
-            additional_str = f"-{args.cust_name}" if args.cust_name else ""
+            additional_str = f"{args.cust_name}" if args.cust_name else ""
             save_root_dir = f"roboverse_demo/demo_{args.sim}/distill-{args.task}{additional_str}/robot-{args.robot}"
         log.info(f"Saving demos to {save_root_dir}")
+        os.makedirs(save_root_dir, exist_ok=True)
+        os.makedirs(f"{save_root_dir}/tmp", exist_ok=True)
         collector = DemoCollector(env.handler, robot, save_root_dir, task_desc)
 
         # pbar = tqdm(total=max_demo - args.demo_start_idx, desc="Collecting demos")
@@ -191,12 +194,6 @@ class DistillDPRunner(BaseRunner):
             end_idx=max_demos,
             pbar=pbar,
         )
-        demo_idxs = []
-
-        ## Apply initial randomization
-        # for env_id, demo_idx in enumerate(demo_idxs):
-        #     randomization_manager.randomize_for_demo(demo_idx)
-
         ## Main Loop
         stop_flag = False
 
@@ -204,6 +201,7 @@ class DistillDPRunner(BaseRunner):
         #     args.task_id_range_low, args.task_id_range_low + max_demos, num_envs
         # ):
         while not stop_flag:
+            demo_idxs = []
             if tot_success >= args.num_demo_success:
                 log.info(f"Reached target number of successful demos ({args.num_demo_success}).")
                 stop_flag = True
@@ -239,10 +237,10 @@ class DistillDPRunner(BaseRunner):
                     env._episode_steps[env_id] = 0
             ## Now record the clean, stabilized initial state
             obs = env.handler.get_states()
-            obs = state_tensor_to_nested(env.handler, obs)
+            nested_obs = state_tensor_to_nested(env.handler, obs)
             for env_id, demo_idx in enumerate(demo_idxs):
                 log.info(f"Starting Demo {demo_idx} in Env {env_id}")
-                collector.create(demo_idx, obs[env_id])
+                collector.create(demo_idx, nested_obs[env_id])
             # reset policy runner state
             policyRunner.reset()
             toc = time.time()
@@ -284,7 +282,7 @@ class DistillDPRunner(BaseRunner):
 
                 # actions = get_actions(all_actions, env, demo_idxs, robot)
                 # obs, reward, success, time_out, extras = env.step(actions)
-                obs = state_tensor_to_nested(env.handler, obs)
+                nested_obs = state_tensor_to_nested(env.handler, obs)
                 # run_out = get_run_out(all_actions, env, demo_idxs)
 
                 for env_id in range(env.handler.num_envs):
@@ -292,7 +290,7 @@ class DistillDPRunner(BaseRunner):
                         continue
 
                     demo_idx = demo_idxs[env_id]
-                    collector.add(demo_idx, obs[env_id])
+                    collector.add(demo_idx, nested_obs[env_id])
 
                 for env_id in success.nonzero().squeeze(-1).tolist():
                     if finished[env_id]:
@@ -366,9 +364,17 @@ class DistillDPRunner(BaseRunner):
                     #     demo_indexer.move_on()
                     # else:
                     finished[env_id] = True
-
+                step += 1
+                if all(finished):
+                    log.info("All environments finished their demos, breaking out of step loop.")
+                    break
             global_step += 1
-
+            for i, demo_idx in enumerate(demo_idxs):
+                if i % args.save_video_freq == 0:
+                    iio.mimwrite(
+                        f"{save_root_dir}/tmp/{demo_idx}.mp4",
+                        [images[i] for images in images_list],
+                    )
         log.info("Finalizing")
         collector.final()
         env.close()

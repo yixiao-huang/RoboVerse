@@ -513,20 +513,22 @@ class DemoCollector:
         assert self.cache == {}
 
 
-def should_skip(log_dir: str, demo_idx: int):
+def should_skip(
+    log_dir: str, demo_idx: int, run_unfinished: bool = False, run_all: bool = True, run_failed: bool = False
+) -> bool:
     demo_name = f"demo_{demo_idx:04d}"
     success_path = os.path.join(log_dir, "success", demo_name, "status.txt")
     failed_path = os.path.join(log_dir, "failed", demo_name, "status.txt")
 
-    if args.run_unfinished:
+    if run_unfinished:
         if not os.path.exists(success_path) and not os.path.exists(failed_path):
             return False
         return True
 
-    if args.run_all:
+    if run_all:
         return False
 
-    if args.run_failed:
+    if run_failed:
         if os.path.exists(success_path):
             return is_status_success(log_dir, demo_idx)
         return False
@@ -544,11 +546,23 @@ def is_status_success(log_dir: str, demo_idx: int) -> bool:
 
 
 class DemoIndexer:
-    def __init__(self, save_root_dir: str, start_idx: int, end_idx: int, pbar: tqdm):
+    def __init__(
+        self,
+        save_root_dir: str,
+        start_idx: int,
+        end_idx: int,
+        pbar: tqdm,
+        run_unfinished: bool = False,
+        run_all: bool = True,
+        run_failed: bool = False,
+    ):
         self.save_root_dir = save_root_dir
         self._next_idx = start_idx
         self.end_idx = end_idx
         self.pbar = pbar
+        self.run_unfinished = run_unfinished
+        self.run_all = run_all
+        self.run_failed = run_failed
         self._skip_if_should()
 
     @property
@@ -556,7 +570,7 @@ class DemoIndexer:
         return self._next_idx
 
     def _skip_if_should(self):
-        while should_skip(self.save_root_dir, self._next_idx):
+        while should_skip(self.save_root_dir, self._next_idx, self.run_unfinished, self.run_all, self.run_failed):
             global global_step, tot_success, tot_give_up
             if is_status_success(self.save_root_dir, self._next_idx):
                 tot_success += 1
@@ -677,6 +691,9 @@ def main(args: Args):
         start_idx=args.demo_start_idx,
         end_idx=max_demo,
         pbar=pbar,
+        run_unfinished=args.run_unfinished,
+        run_all=args.run_all,
+        run_failed=args.run_failed,
     )
     demo_idxs = []
     for demo_idx in range(env.handler.num_envs):

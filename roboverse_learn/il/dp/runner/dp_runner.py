@@ -514,8 +514,10 @@ class DPRunner(BaseRunner):
             simulator=args.sim,
             num_envs=args.num_envs,
             headless=args.headless,
-            cameras=[camera]
+            cameras=[camera],
+            env_spacing=args.env_spacing,
         )
+        import pdb; pdb.set_trace()
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         tic = time.time()
         env = task_cls(scenario, device=device)

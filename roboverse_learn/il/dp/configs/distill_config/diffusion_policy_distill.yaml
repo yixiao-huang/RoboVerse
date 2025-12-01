@@ -7,10 +7,15 @@ distill_args:
   task: ""
   max_step: 200
   num_envs: 1
+  env_spacing: 1.0
 
   sim: "isaacsim"
   max_demo: null
   dp_camera: False
+  run_unfinished: False
+  run_all: True
+  run_failed: False
+  cust_name: ""
 
 policy_runner:
   action:

@@ -46,6 +46,7 @@ if __name__ == "__main__":
         ## Others
         num_envs: int = 4
         headless: bool = False
+        env_spacing: float = 1.0
 
         def __post_init__(self):
             """Post-initialization configuration."""
@@ -59,6 +60,7 @@ if __name__ == "__main__":
         simulator=args.sim,
         headless=args.headless,
         num_envs=args.num_envs,
+        env_spacing=args.env_spacing,
     )
 
     # add cameras

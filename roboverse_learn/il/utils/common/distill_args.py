@@ -26,6 +26,8 @@ class Args:
     """Maximum number of demos to collect, None for all demos"""
     headless: bool = True
     """Run in headless mode"""
+    env_spacing: float = 1.0
+    """Spacing between parallel environments"""
     table: bool = True
     """Try to add a table"""
     task_id_range_low: int = 0
@@ -55,6 +57,13 @@ class Args:
     tot_steps_after_success: int = 20
     """Maximum number of steps to collect after success, or until run out of demo"""
 
+    # copied from collect_demo.py
+    run_all: bool = True
+    """Rollout all trajectories, overwrite existing demos"""
+    run_unfinished: bool = False
+    """Rollout unfinished trajectories"""
+    run_failed: bool = False
+    """Rollout unfinished and failed trajectories"""
     def __post_init__(self):
         # if self.random.table and not self.table:
         #     log.warning("Cannot enable table randomization without a table, disabling table randomization")

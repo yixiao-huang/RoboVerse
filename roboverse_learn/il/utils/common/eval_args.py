@@ -18,6 +18,8 @@ class Args:
     """Robot name"""
     num_envs: int = 1
     """Number of parallel environments, find a proper number for best performance on your machine"""
+    env_spacing: float = 1.0
+    """Spacing between parallel environments"""
     sim: Literal["isaaclab", "mujoco", "isaacgym"] = "isaacsim"
     """Simulator backend"""
     dp_camera: bool = False
