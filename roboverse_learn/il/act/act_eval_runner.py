@@ -358,7 +358,7 @@ def main():
 
         import pickle
 
-        from roboverse_learn.il.utils.act.policy import ACTPolicy
+        from roboverse_learn.il.act.policy import ACTPolicy
 
         ckpt_path = os.path.join(args.ckpt_path, act_ckpt_name)
         policy = ACTPolicy(policy_config)
@@ -472,9 +472,7 @@ def main():
                 raw_action = raw_action.squeeze(0).cpu().numpy()
                 action = post_process(raw_action)
                 action = action[:franka_state_dim]
-
-
-                action = torch.tensor(action, dtype=torch.float32, device="cuda")
+                action = torch.tensor(action, dtype=torch.float32, device="cpu")
 
                 # IK solver expects original joint order, but state uses alphabetical order
                 reorder_idx = env.handler.get_joint_reindex(args.robot)
