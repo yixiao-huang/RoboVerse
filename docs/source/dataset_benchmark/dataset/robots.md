@@ -19,3 +19,18 @@ RoboVerse currently includes some robots.
 | UR5e | Arm | 6 | ur5e_2f85 |
 | Walker | Bipedal | 6 | walker |
 | Ant | Quadreuped | 12 | ant |
+
+## Dexterous Hands
+
+RoboVerse includes support for various dexterous hands for manipulation tasks.
+
+| Robot Name | Number of DoFs | Config Name | Notes |
+| ------ | ---------------- | ------------ | ----- |
+| Allegro Hand | 16 | allegrohand | 4-finger anthropomorphic hand |
+| BrainCo Hand (Left) | 11 | brainco_hand_left | 6 actuated + 5 mimic/passive joints, prosthetic hand |
+| BrainCo Hand (Right) | 11 | brainco_hand_right | 6 actuated + 5 mimic/passive joints, prosthetic hand |
+| Inspire Hand (Left) | 12 | inspire_hand_left | 6 actuated + 6 mimic/passive (coupled) joints |
+| Inspire Hand (Right) | 12 | inspire_hand_right | 6 actuated + 6 mimic/passive (coupled) joints |
+| PSIHand (Left) | 21 | psihand_left | All 21 joints actuated. Known issues with IsaacGym, use MuJoCo/Genesis |
+| PSIHand (Right) | 21 | psihand_right | All 21 joints actuated. Known issues with IsaacGym, use MuJoCo/Genesis |
+| XHand | 12 | xhand | Compact dexterous hand |
