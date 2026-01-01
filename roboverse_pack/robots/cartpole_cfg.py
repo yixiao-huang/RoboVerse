@@ -44,13 +44,13 @@ class CartpoleCfg(RobotCfg):
             self.actuators = {
                 "slider_to_cart": BaseActuatorCfg(
                     velocity_limit=100.0,  # From URDF
-                    torque_limit=400.0,  # Max force for cart (from IsaacGymEnvs)
+                    effort_limit_sim=400.0,  # Max force for cart (from IsaacGymEnvs)
                     stiffness=0.0,  # Direct force control
                     damping=0.0,  # No damping for direct control
                 ),
                 "cart_to_pole": BaseActuatorCfg(
                     velocity_limit=8.0,  # From URDF
-                    torque_limit=0.0,  # Passive joint - no actuation
+                    effort_limit_sim=0.0,  # Passive joint - no actuation
                     stiffness=0.0,
                     damping=0.0,
                     fully_actuated=False,  # This is a passive joint

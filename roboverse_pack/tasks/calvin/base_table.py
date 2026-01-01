@@ -41,18 +41,32 @@ class BaseCalvinTableTask(BaseTaskEnv):
                 default_position=[-0.34, -0.46, 0.24],
                 default_orientation=[1, 0, 0, 0],
                 actuators={
-                    "panda_joint1": BaseActuatorCfg(velocity_limit=2.175, torque_limit=87, stiffness=280, damping=10),
-                    "panda_joint2": BaseActuatorCfg(velocity_limit=2.175, torque_limit=87, stiffness=280, damping=10),
-                    "panda_joint3": BaseActuatorCfg(velocity_limit=2.175, torque_limit=87, stiffness=280, damping=10),
-                    "panda_joint4": BaseActuatorCfg(velocity_limit=2.175, torque_limit=87, stiffness=280, damping=10),
-                    "panda_joint5": BaseActuatorCfg(velocity_limit=2.61, torque_limit=12.0, stiffness=200, damping=5),
-                    "panda_joint6": BaseActuatorCfg(velocity_limit=2.61, torque_limit=12.0, stiffness=200, damping=5),
-                    "panda_joint7": BaseActuatorCfg(velocity_limit=2.61, torque_limit=12.0, stiffness=200, damping=5),
+                    "panda_joint1": BaseActuatorCfg(
+                        velocity_limit=2.175, effort_limit_sim=87, stiffness=280, damping=10
+                    ),
+                    "panda_joint2": BaseActuatorCfg(
+                        velocity_limit=2.175, effort_limit_sim=87, stiffness=280, damping=10
+                    ),
+                    "panda_joint3": BaseActuatorCfg(
+                        velocity_limit=2.175, effort_limit_sim=87, stiffness=280, damping=10
+                    ),
+                    "panda_joint4": BaseActuatorCfg(
+                        velocity_limit=2.175, effort_limit_sim=87, stiffness=280, damping=10
+                    ),
+                    "panda_joint5": BaseActuatorCfg(
+                        velocity_limit=2.61, effort_limit_sim=12.0, stiffness=200, damping=5
+                    ),
+                    "panda_joint6": BaseActuatorCfg(
+                        velocity_limit=2.61, effort_limit_sim=12.0, stiffness=200, damping=5
+                    ),
+                    "panda_joint7": BaseActuatorCfg(
+                        velocity_limit=2.61, effort_limit_sim=12.0, stiffness=200, damping=5
+                    ),
                     "panda_finger_joint1": BaseActuatorCfg(
-                        velocity_limit=0.2, torque_limit=20.0, is_ee=True, stiffness=30000, damping=1000
+                        velocity_limit=0.2, effort_limit_sim=20.0, is_ee=True, stiffness=30000, damping=1000
                     ),
                     "panda_finger_joint2": BaseActuatorCfg(
-                        velocity_limit=0.2, torque_limit=20.0, is_ee=True, stiffness=30000, damping=1000
+                        velocity_limit=0.2, effort_limit_sim=20.0, is_ee=True, stiffness=30000, damping=1000
                     ),
                 },
                 default_joint_positions={

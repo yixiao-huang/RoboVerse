@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Dict, List, Literal, Optional
+from typing import Literal, Optional
+from datetime import datetime
 
 from metasim.utils import configclass
 
@@ -28,12 +29,14 @@ class RslRlPPOConfig(RslRlOnPolicyRunnerCfg):
     exp_name: str = "rsl_rl_ppo"
     experiment_name: str = ""  # defaults to task name if left empty
     run_name: str = ""
-    seed: int = 1
+    seed: int = 42
     num_steps_per_env: int = 24
     max_iterations: int = 50000
     save_interval: int = 100
     empirical_normalization: bool = False
-    obs_groups: Optional[Dict[str, List[str]]] = None
+
+    # NOTE when `obs_groups` is None, it'll be resolved as {"policy": ["policy"], "critic": ["policy", "critic"]}, which makes the critic's obs the concatenated result of both policy and privileged obs, which means these two should not overlap under this setup
+    obs_groups: Optional[dict[str, list[str]]] = None
     clip_actions: Optional[float] = None
     logger: Literal["tensorboard", "neptune", "wandb"] = "tensorboard"
     neptune_project: str = "isaaclab"
@@ -93,7 +96,8 @@ class RslRlPPOConfig(RslRlOnPolicyRunnerCfg):
 
         if self.model_dir is None:
             name = self.exp_name or self.experiment_name
-            self.model_dir = os.path.join("outputs", name, self.task)
+            log_dir = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            self.model_dir = os.path.join("outputs", name, self.task, log_dir)
 
         if self.obs_groups is None:
             self.obs_groups = {"policy": ["policy"], "critic": ["policy", "critic"]}

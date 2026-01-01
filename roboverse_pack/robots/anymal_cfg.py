@@ -23,20 +23,20 @@ class AnymalCfg(RobotCfg):
     # Define actuators for each joint
     actuators: dict[str, BaseActuatorCfg] = {
         # Hip Abduction/Adduction
-        "LF_HAA": BaseActuatorCfg(velocity_limit=30.0, torque_limit=40.0, stiffness=85.0, damping=2.0),
-        "LH_HAA": BaseActuatorCfg(velocity_limit=30.0, torque_limit=40.0, stiffness=85.0, damping=2.0),
-        "RF_HAA": BaseActuatorCfg(velocity_limit=30.0, torque_limit=40.0, stiffness=85.0, damping=2.0),
-        "RH_HAA": BaseActuatorCfg(velocity_limit=30.0, torque_limit=40.0, stiffness=85.0, damping=2.0),
+        "LF_HAA": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=40.0, stiffness=85.0, damping=2.0),
+        "LH_HAA": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=40.0, stiffness=85.0, damping=2.0),
+        "RF_HAA": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=40.0, stiffness=85.0, damping=2.0),
+        "RH_HAA": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=40.0, stiffness=85.0, damping=2.0),
         # Hip Flexion/Extension
-        "LF_HFE": BaseActuatorCfg(velocity_limit=30.0, torque_limit=40.0, stiffness=85.0, damping=2.0),
-        "LH_HFE": BaseActuatorCfg(velocity_limit=30.0, torque_limit=40.0, stiffness=85.0, damping=2.0),
-        "RF_HFE": BaseActuatorCfg(velocity_limit=30.0, torque_limit=40.0, stiffness=85.0, damping=2.0),
-        "RH_HFE": BaseActuatorCfg(velocity_limit=30.0, torque_limit=40.0, stiffness=85.0, damping=2.0),
+        "LF_HFE": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=40.0, stiffness=85.0, damping=2.0),
+        "LH_HFE": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=40.0, stiffness=85.0, damping=2.0),
+        "RF_HFE": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=40.0, stiffness=85.0, damping=2.0),
+        "RH_HFE": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=40.0, stiffness=85.0, damping=2.0),
         # Knee Flexion/Extension
-        "LF_KFE": BaseActuatorCfg(velocity_limit=30.0, torque_limit=40.0, stiffness=85.0, damping=2.0),
-        "LH_KFE": BaseActuatorCfg(velocity_limit=30.0, torque_limit=40.0, stiffness=85.0, damping=2.0),
-        "RF_KFE": BaseActuatorCfg(velocity_limit=30.0, torque_limit=40.0, stiffness=85.0, damping=2.0),
-        "RH_KFE": BaseActuatorCfg(velocity_limit=30.0, torque_limit=40.0, stiffness=85.0, damping=2.0),
+        "LF_KFE": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=40.0, stiffness=85.0, damping=2.0),
+        "LH_KFE": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=40.0, stiffness=85.0, damping=2.0),
+        "RF_KFE": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=40.0, stiffness=85.0, damping=2.0),
+        "RH_KFE": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=40.0, stiffness=85.0, damping=2.0),
     }
 
     joint_limits: dict[str, tuple[float, float]] = {

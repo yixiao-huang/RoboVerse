@@ -30,12 +30,12 @@ def bad_orientation(env: EnvTypes, env_states: TensorState, limit_angle: float) 
     return torch.acos(-projected_gravity[:, 2]).abs() > limit_angle
 
 
-def time_out(env: EnvTypes, env_states: TensorState) -> torch.Tensor:
+def time_out(env: EnvTypes, env_states: TensorState) -> torch.Tensor:  # used
     """Terminate the episode when the episode length exceeds the maximum episode length."""
     return env._episode_steps >= env.max_episode_steps
 
 
-def undesired_contact(
+def undesired_contact(  # unused
     env: EnvTypes,
     env_states: TensorState,
     contact_names: list[str],

@@ -66,7 +66,7 @@ class LeggedRobotTask(AgentTask):
         torque_limits = (
             robot.torque_limits
             if hasattr(robot, "torque_limits")
-            else {name: actuator_cfg.torque_limit for name, actuator_cfg in robot.actuators.items()}
+            else {name: actuator_cfg.effort_limit_sim for name, actuator_cfg in robot.actuators.items()}
         )
 
         sorted_limits = [torque_limits[name] for name in sorted_joint_names]

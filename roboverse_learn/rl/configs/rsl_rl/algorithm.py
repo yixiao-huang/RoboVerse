@@ -74,6 +74,18 @@ class RslRlPpoAlgorithmCfg:
     class_name: str = "PPO"
     """The algorithm class name. Default is PPO."""
 
+    value_loss_coef: float = MISSING
+    """The coefficient for the value loss."""
+
+    use_clipped_value_loss: bool = MISSING
+    """Whether to use clipped value loss."""
+
+    clip_param: float = MISSING
+    """The clipping parameter for the policy."""
+
+    entropy_coef: float = MISSING
+    """The coefficient for the entropy loss."""
+
     num_learning_epochs: int = MISSING
     """The number of learning epochs per update."""
 
@@ -92,23 +104,11 @@ class RslRlPpoAlgorithmCfg:
     lam: float = MISSING
     """The lambda parameter for Generalized Advantage Estimation (GAE)."""
 
-    entropy_coef: float = MISSING
-    """The coefficient for the entropy loss."""
-
     desired_kl: float = MISSING
     """The desired KL divergence."""
 
     max_grad_norm: float = MISSING
     """The maximum gradient norm."""
-
-    value_loss_coef: float = MISSING
-    """The coefficient for the value loss."""
-
-    use_clipped_value_loss: bool = MISSING
-    """Whether to use clipped value loss."""
-
-    clip_param: float = MISSING
-    """The clipping parameter for the policy."""
 
     normalize_advantage_per_mini_batch: bool = False
     """Whether to normalize the advantage per mini-batch. Default is False.
@@ -117,11 +117,11 @@ class RslRlPpoAlgorithmCfg:
     Otherwise, the advantage is normalized over the entire collected trajectories.
     """
 
-    rnd_cfg: None = None
-    """The RND configuration. Default is None, in which case RND is not used."""
-
     symmetry_cfg: None = None
     """The symmetry configuration. Default is None, in which case symmetry is not used."""
+
+    rnd_cfg: None = None
+    """The RND configuration. Default is None, in which case RND is not used."""
 
 
 #########################

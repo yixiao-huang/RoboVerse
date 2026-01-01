@@ -31,13 +31,19 @@ class Gen3Cfg(RobotCfg):
     # Actuator configuration - Based on Gen3 joint specifications
     # Large actuators for main arm joints, small actuators for wrist joints
     actuators: dict[str, BaseActuatorCfg] = {
-        "joint_1": BaseActuatorCfg(stiffness=2000, damping=100, velocity_limit=1.3963, torque_limit=105),
-        "joint_2": BaseActuatorCfg(stiffness=2000, damping=100, velocity_limit=1.3963, torque_limit=105),
-        "joint_3": BaseActuatorCfg(stiffness=2000, damping=100, velocity_limit=1.3963, torque_limit=105),
-        "joint_4": BaseActuatorCfg(stiffness=2000, damping=100, velocity_limit=1.3963, torque_limit=105),
-        "joint_5": BaseActuatorCfg(stiffness=500, damping=50, velocity_limit=1.2218, torque_limit=52),  # Small actuator
-        "joint_6": BaseActuatorCfg(stiffness=500, damping=50, velocity_limit=1.2218, torque_limit=52),  # Small actuator
-        "joint_7": BaseActuatorCfg(stiffness=500, damping=50, velocity_limit=1.2218, torque_limit=52),  # Small actuator
+        "joint_1": BaseActuatorCfg(stiffness=2000, damping=100, velocity_limit=1.3963, effort_limit_sim=105),
+        "joint_2": BaseActuatorCfg(stiffness=2000, damping=100, velocity_limit=1.3963, effort_limit_sim=105),
+        "joint_3": BaseActuatorCfg(stiffness=2000, damping=100, velocity_limit=1.3963, effort_limit_sim=105),
+        "joint_4": BaseActuatorCfg(stiffness=2000, damping=100, velocity_limit=1.3963, effort_limit_sim=105),
+        "joint_5": BaseActuatorCfg(
+            stiffness=500, damping=50, velocity_limit=1.2218, effort_limit_sim=52
+        ),  # Small actuator
+        "joint_6": BaseActuatorCfg(
+            stiffness=500, damping=50, velocity_limit=1.2218, effort_limit_sim=52
+        ),  # Small actuator
+        "joint_7": BaseActuatorCfg(
+            stiffness=500, damping=50, velocity_limit=1.2218, effort_limit_sim=52
+        ),  # Small actuator
     }
 
     # Joint limits - Based on Gen3 actual joint limits from MJCF/URDF (radians)

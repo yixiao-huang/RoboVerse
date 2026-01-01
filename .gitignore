@@ -111,3 +111,7 @@ id_rsa*
 *.pkl
 *.pt
 output
+
+.cursor/
+artifacts/
+nohup/

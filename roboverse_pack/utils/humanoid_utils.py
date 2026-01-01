@@ -1,10 +1,140 @@
 from __future__ import annotations
 
+import argparse
+import os
+import random
 import re
 from functools import lru_cache
 from typing import Callable
 
+import numpy as np
 import torch
+from loguru import logger as log
+
+
+def parse_arguments(description="humanoid rl task arguments", custom_parameters=None):
+    """Parse command line arguments."""
+    if custom_parameters is None:
+        custom_parameters = []
+    parser = argparse.ArgumentParser(description=description)
+    for argument in custom_parameters:
+        if ("name" in argument) and ("type" in argument or "action" in argument):
+            help_str = ""
+            if "help" in argument:
+                help_str = argument["help"]
+
+            if "type" in argument:
+                if "default" in argument:
+                    parser.add_argument(
+                        argument["name"],
+                        type=argument["type"],
+                        default=argument["default"],
+                        help=help_str,
+                    )
+                else:
+                    parser.add_argument(argument["name"], type=argument["type"], help=help_str)
+            elif "action" in argument:
+                parser.add_argument(argument["name"], action=argument["action"], help=help_str)
+
+        else:
+            log.error("ERROR: command line argument name, type/action must be defined, argument not added to parser")
+            log.error("supported keys: name, type, default, action, help")
+
+    return parser.parse_args()
+
+
+def get_args(test=False):
+    """Get the command line arguments."""
+    custom_parameters = [
+        {
+            "name": "--task",
+            "type": str,
+            "default": "walk_g1_dof29",
+            "help": "Task name for training/testing.",
+        },
+        {"name": "--robots", "type": str, "default": "", "help": "The used robots."},
+        {
+            "name": "--objects",
+            "type": str,
+            "default": None,
+            "help": "The used objects.",
+        },
+        {
+            "name": "--num_envs",
+            "type": int,
+            "default": 128,
+            "help": "number of parallel environments.",
+        },
+        {
+            "name": "--iter",
+            "type": int,
+            "default": 15000,
+            "help": "Max number of training iterations.",
+        },
+        {
+            "name": "--sim",
+            "type": str,
+            "default": "isaacgym",
+            "help": "simulator type, currently only isaacgym is supported",
+        },
+        {
+            "name": "--headless",
+            "action": "store_true",
+            "default": True,
+            "help": "Force display off at all times",
+        },
+        {
+            "name": "--resume",  # TODO
+            "type": str,
+            "default": None,
+            "help": "Resume training from a checkpoint",
+        },
+        {
+            "name": "--checkpoint",  # TODO
+            "type": int,
+            "default": -1,
+            "help": "Saved model checkpoint number. If -1: will load the last checkpoint. Overrides config file if provided.",
+        },
+        {
+            "name": "--seed",
+            "type": int,
+            "default": -1,
+            "help": "The random seed for the run. If -1, will be randomly generated.",
+        },
+        {
+            "name": "--eval",
+            "action": "store_true",
+            "default": False,
+            "help": "Whether to run in eval mode",
+        },
+        {
+            "name": "--jit_load",
+            "action": "store_true",
+            "default": False,
+            "help": "Whether to load the JIT model",
+        },
+        # {"name": "--run_name", "type": str, "required": True if not test else False, "help": "Name of the run. Overrides config file if provided."},
+        # {"name": "--load_run", "type": str, "default": None, "help": "Path to the config file. If provided, will override command line arguments."},
+        # {"name": "--use_wandb", "action": "store_true", "default": True, "help": "Use wandb for logging"},
+        # {"name": "--wandb", "type": str, "default": "g1_walking", "help": "Wandb project name"},
+        # {"name": "--log", "type": str, "default": None, "help": "log directory. If None, will be set automatically."},
+    ]
+    args = parse_arguments(custom_parameters=custom_parameters)
+    return args
+
+
+def set_seed(seed=-1):
+    """Set the seed for the random number generators."""
+    if seed == -1:
+        seed = np.random.randint(0, 10000)
+    log.info(f"Setting seed: {seed}")
+
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
 
 
 def get_indices_from_substring(

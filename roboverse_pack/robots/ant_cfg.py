@@ -66,14 +66,14 @@ class AntCfg(RobotCfg):
             # For direct torque control, set stiffness=1.0, damping=0.0
             # This makes the PD controller act as direct torque (torque = 1.0 * action)
             self.actuators = {
-                "hip_1": BaseActuatorCfg(velocity_limit=30.0, torque_limit=15.0, stiffness=1.0, damping=0.0),
-                "ankle_1": BaseActuatorCfg(velocity_limit=30.0, torque_limit=15.0, stiffness=1.0, damping=0.0),
-                "hip_2": BaseActuatorCfg(velocity_limit=30.0, torque_limit=15.0, stiffness=1.0, damping=0.0),
-                "ankle_2": BaseActuatorCfg(velocity_limit=30.0, torque_limit=15.0, stiffness=1.0, damping=0.0),
-                "hip_3": BaseActuatorCfg(velocity_limit=30.0, torque_limit=15.0, stiffness=1.0, damping=0.0),
-                "ankle_3": BaseActuatorCfg(velocity_limit=30.0, torque_limit=15.0, stiffness=1.0, damping=0.0),
-                "hip_4": BaseActuatorCfg(velocity_limit=30.0, torque_limit=15.0, stiffness=1.0, damping=0.0),
-                "ankle_4": BaseActuatorCfg(velocity_limit=30.0, torque_limit=15.0, stiffness=1.0, damping=0.0),
+                "hip_1": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=15.0, stiffness=1.0, damping=0.0),
+                "ankle_1": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=15.0, stiffness=1.0, damping=0.0),
+                "hip_2": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=15.0, stiffness=1.0, damping=0.0),
+                "ankle_2": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=15.0, stiffness=1.0, damping=0.0),
+                "hip_3": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=15.0, stiffness=1.0, damping=0.0),
+                "ankle_3": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=15.0, stiffness=1.0, damping=0.0),
+                "hip_4": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=15.0, stiffness=1.0, damping=0.0),
+                "ankle_4": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=15.0, stiffness=1.0, damping=0.0),
             }
 
         if self.control_type is None:

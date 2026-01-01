@@ -36,6 +36,12 @@ class RslRlEnvWrapper:
         # Merge info into extras
         extras = {**getattr(self.env, 'extras', {}), **info}
 
+        # move time out information to the extras dict
+        # this is only needed for infinite horizon tasks
+        # NOTE this is required by PPO to compute rewards for optimizing critic
+        if not getattr(self.env.cfg, "is_finite_horizon", False):
+            extras["time_outs"] = truncated
+
         # Return RSL-RL format with TensorDict observations
         return self.obs_buf, rewards, dones, extras
 
@@ -69,7 +75,7 @@ class RslRlEnvWrapper:
 
     @property
     def cfg(self) -> dict | object:
-        return self.train_cfg
+        return self.env.cfg if hasattr(self.env, "cfg") else self.train_cfg
 
     @property
     def obs_buf(self) -> TensorDict:

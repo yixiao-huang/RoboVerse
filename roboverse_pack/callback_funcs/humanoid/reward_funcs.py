@@ -193,6 +193,7 @@ def feet_gait(
         is_stance = leg_phase[:, i] < threshold
         reward += ~(is_stance ^ is_contact[:, i])
 
+    # only reward when the robot is commanded to move, so zero the reward when command speed is less than 0.1
     if command_name == "base_velocity":
         cmd_norm = torch.norm(env.commands_manager.value[:, :2], dim=1)
         reward *= (cmd_norm > 0.1).float()
