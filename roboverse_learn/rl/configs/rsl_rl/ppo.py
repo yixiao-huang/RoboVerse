@@ -4,6 +4,7 @@ from typing import Literal, Optional
 from datetime import datetime
 
 from metasim.utils import configclass
+from datetime import datetime
 
 SimBackend = Literal[
     "isaacgym",
@@ -96,8 +97,7 @@ class RslRlPPOConfig(RslRlOnPolicyRunnerCfg):
 
         if self.model_dir is None:
             name = self.exp_name or self.experiment_name
-            log_dir = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            self.model_dir = os.path.join("outputs", name, self.task, log_dir)
+            self.model_dir = os.path.join("outputs", name, self.task, datetime.now().strftime("%Y%m%d_%H%M%S"))
 
         if self.obs_groups is None:
             self.obs_groups = {"policy": ["policy"], "critic": ["critic"]}
