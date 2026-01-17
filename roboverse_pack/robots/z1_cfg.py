@@ -31,14 +31,14 @@ class Z1Cfg(RobotCfg):
     # Actuator configuration - Based on Z1 joint specifications
     # Using gainprm and force settings from MJCF
     actuators: dict[str, BaseActuatorCfg] = {
-        "joint1": BaseActuatorCfg(stiffness=1000, damping=100, velocity_limit=3.1415, torque_limit=30),
+        "joint1": BaseActuatorCfg(stiffness=1000, damping=100, velocity_limit=3.1415, effort_limit_sim=30),
         "joint2": BaseActuatorCfg(
-            stiffness=1500, damping=150, velocity_limit=3.1415, torque_limit=60
+            stiffness=1500, damping=150, velocity_limit=3.1415, effort_limit_sim=60
         ),  # Higher torque for shoulder
-        "joint3": BaseActuatorCfg(stiffness=1000, damping=100, velocity_limit=3.1415, torque_limit=30),
-        "joint4": BaseActuatorCfg(stiffness=1000, damping=100, velocity_limit=3.1415, torque_limit=30),
-        "joint5": BaseActuatorCfg(stiffness=1000, damping=100, velocity_limit=3.1415, torque_limit=30),
-        "joint6": BaseActuatorCfg(stiffness=1000, damping=100, velocity_limit=3.1415, torque_limit=30),
+        "joint3": BaseActuatorCfg(stiffness=1000, damping=100, velocity_limit=3.1415, effort_limit_sim=30),
+        "joint4": BaseActuatorCfg(stiffness=1000, damping=100, velocity_limit=3.1415, effort_limit_sim=30),
+        "joint5": BaseActuatorCfg(stiffness=1000, damping=100, velocity_limit=3.1415, effort_limit_sim=30),
+        "joint6": BaseActuatorCfg(stiffness=1000, damping=100, velocity_limit=3.1415, effort_limit_sim=30),
     }
 
     # Joint limits - Based on Z1 actual joint limits from MJCF (radians)

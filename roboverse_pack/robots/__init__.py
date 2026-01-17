@@ -2,10 +2,13 @@
 
 from metasim.scenario.robot import RobotCfg
 
+from .agibot_a2_cfg import AgibotA2Dof12Cfg
 from .allegrohand_cfg import AllegroHandCfg
 from .aloha import AlohaCfg
 from .ant_cfg import AntCfg
 from .anymal_cfg import AnymalCfg
+from .brainco_hand_left_cfg import BraincoHandLeftCfg
+from .brainco_hand_right_cfg import BraincoHandRightCfg
 from .cartpole_cfg import CartpoleCfg
 from .fetch_cfg import FetchCfg
 from .franka_cfg import FrankaCfg
@@ -15,6 +18,7 @@ from .franka_urdf_cfg import FrankaUrdfCfg
 from .franka_urdf_sapien_cfg import FrankaUrdfSapienCfg
 from .franka_with_gripper_extension_cfg import FrankaWithGripperExtensionCfg
 from .g1_cfg import G1Dof12Cfg, G1Dof23Cfg, G1Dof27Cfg, G1Dof29Cfg, G1Dof29Dex3Cfg
+from .g1_tracking import G1TrackingCfg
 from .gen3_cfg import Gen3Cfg
 from .go2_cfg import Go2Cfg
 from .google_robot_static_cfg import GoogleRobotStaticCfg
@@ -26,10 +30,14 @@ from .h1_simple_hand_cfg import H1SimpleHandCfg
 from .h1_wrist_cfg import H1WristCfg
 from .iiwa14_cfg import Iiwa14Cfg
 from .iiwa_cfg import IiwaCfg
+from .inspire_hand_left_cfg import InspireHandLeftCfg
+from .inspire_hand_right_cfg import InspireHandRightCfg
 from .kinova_gen3_cfg import KinovaGen3Cfg
 from .kinova_gen3_robotiq_2f85 import KinovaGen3Robotiq2f85Cfg
 from .koch_mjcf_cfg import KochCfg
 from .lite6_mjcf_cfg import Lite6Cfg
+from .psihand_left_cfg import PsihandLeftCfg
+from .psihand_right_cfg import PsihandRightCfg
 from .sawyer_cfg import SawyerCfg
 from .sawyer_mujoco_cfg import SawyerMujocoCfg
 from .shadow_hand_cfg import ShadowHandCfg

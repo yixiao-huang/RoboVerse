@@ -21,11 +21,14 @@ Guidelines for modifications:
 ## Contributors
 
 * Bangjun Wang
+* Bei Wang
+* Boqi Zhao
 * Chaoyi Xu
 * Chengyang Zhao
 * Dechen Gao
 * Di Fan
 * Dylan Goetting
+* Hanchu Zhou
 * Haoran Lu
 * Haozhe Chen
 * Haozhe Lou
@@ -39,6 +42,7 @@ Guidelines for modifications:
 * Songlin Wei
 * Xinjie Wang
 * Xinying Guo
+* Yi Zhang
 * Yikai Tang
 * Yongce Liu
 * Yu Hong

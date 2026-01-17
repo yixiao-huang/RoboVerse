@@ -23,22 +23,22 @@ class AllegroHandCfg(RobotCfg):
     isaacgym_flip_visual_attachments: bool = False
 
     actuators: dict[str, BaseActuatorCfg] = {
-        "index_joint_0": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "index_joint_1": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "index_joint_2": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "index_joint_3": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "middle_joint_0": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "middle_joint_1": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "middle_joint_2": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "middle_joint_3": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "ring_joint_0": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "ring_joint_1": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "ring_joint_2": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "ring_joint_3": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "thumb_joint_0": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "thumb_joint_1": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "thumb_joint_2": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
-        "thumb_joint_3": BaseActuatorCfg(velocity_limit=30.0, torque_limit=0.5, stiffness=3.0, damping=0.1),
+        "index_joint_0": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "index_joint_1": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "index_joint_2": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "index_joint_3": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "middle_joint_0": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "middle_joint_1": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "middle_joint_2": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "middle_joint_3": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "ring_joint_0": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "ring_joint_1": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "ring_joint_2": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "ring_joint_3": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "thumb_joint_0": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "thumb_joint_1": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "thumb_joint_2": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
+        "thumb_joint_3": BaseActuatorCfg(velocity_limit=30.0, effort_limit_sim=0.5, stiffness=3.0, damping=0.1),
     }
 
     joint_limits: dict[str, tuple[float, float]] = {

@@ -33,72 +33,72 @@ class VegaCfg(RobotCfg):
     # ==================== Actuator Configuration ====================
     actuators: dict[str, BaseActuatorCfg] = {
         # Base wheels - continuous joints need higher stiffness for smooth rotation
-        "B_wheel_j1": BaseActuatorCfg(velocity_limit=12.0, torque_limit=16.0, stiffness=1e4, damping=1e3),
-        "B_wheel_j2": BaseActuatorCfg(velocity_limit=12.0, torque_limit=16.0, stiffness=1e4, damping=1e3),
-        "R_wheel_j1": BaseActuatorCfg(velocity_limit=3.0, torque_limit=6.0, stiffness=5e3, damping=500),
-        "R_wheel_j2": BaseActuatorCfg(velocity_limit=12.0, torque_limit=16.0, stiffness=1e4, damping=1e3),
-        "L_wheel_j1": BaseActuatorCfg(velocity_limit=3.0, torque_limit=6.0, stiffness=5e3, damping=500),
-        "L_wheel_j2": BaseActuatorCfg(velocity_limit=12.0, torque_limit=16.0, stiffness=1e4, damping=1e3),
+        "B_wheel_j1": BaseActuatorCfg(velocity_limit=12.0, effort_limit_sim=16.0, stiffness=1e4, damping=1e3),
+        "B_wheel_j2": BaseActuatorCfg(velocity_limit=12.0, effort_limit_sim=16.0, stiffness=1e4, damping=1e3),
+        "R_wheel_j1": BaseActuatorCfg(velocity_limit=3.0, effort_limit_sim=6.0, stiffness=5e3, damping=500),
+        "R_wheel_j2": BaseActuatorCfg(velocity_limit=12.0, effort_limit_sim=16.0, stiffness=1e4, damping=1e3),
+        "L_wheel_j1": BaseActuatorCfg(velocity_limit=3.0, effort_limit_sim=6.0, stiffness=5e3, damping=500),
+        "L_wheel_j2": BaseActuatorCfg(velocity_limit=12.0, effort_limit_sim=16.0, stiffness=1e4, damping=1e3),
         # Torso - high torque joints need high stiffness
         "torso_j1": BaseActuatorCfg(
-            velocity_limit=0.9, torque_limit=700.0, stiffness=1e6, damping=1e5
+            velocity_limit=0.9, effort_limit_sim=700.0, stiffness=1e6, damping=1e5
         ),  # Increased stiffness for stability
         "torso_j2": BaseActuatorCfg(
-            velocity_limit=0.9, torque_limit=380.0, stiffness=1e6, damping=1e5
+            velocity_limit=0.9, effort_limit_sim=380.0, stiffness=1e6, damping=1e5
         ),  # Increased stiffness for stability
         "torso_j3": BaseActuatorCfg(
-            velocity_limit=0.9, torque_limit=380.0, stiffness=1e6, damping=1e5
+            velocity_limit=0.9, effort_limit_sim=380.0, stiffness=1e6, damping=1e5
         ),  # Increased stiffness for stability
         # # Left arm - progressive stiffness from base to tip
         "L_arm_j1": BaseActuatorCfg(
-            velocity_limit=2.4, torque_limit=150.0, stiffness=5e4, damping=5e3
+            velocity_limit=2.4, effort_limit_sim=150.0, stiffness=5e4, damping=5e3
         ),  # Increased for stability
         "L_arm_j2": BaseActuatorCfg(
-            velocity_limit=2.4, torque_limit=150.0, stiffness=5e4, damping=5e3
+            velocity_limit=2.4, effort_limit_sim=150.0, stiffness=5e4, damping=5e3
         ),  # Increased for stability
-        "L_arm_j3": BaseActuatorCfg(velocity_limit=2.7, torque_limit=80.0, stiffness=2e4, damping=2e3),
-        "L_arm_j4": BaseActuatorCfg(velocity_limit=2.7, torque_limit=80.0, stiffness=1e4, damping=1e3),
-        "L_arm_j5": BaseActuatorCfg(velocity_limit=2.7, torque_limit=25.0, stiffness=5e3, damping=500),
-        "L_arm_j6": BaseActuatorCfg(velocity_limit=2.7, torque_limit=25.0, stiffness=5e3, damping=500),
-        "L_arm_j7": BaseActuatorCfg(velocity_limit=2.7, torque_limit=25.0, stiffness=5e3, damping=500),
+        "L_arm_j3": BaseActuatorCfg(velocity_limit=2.7, effort_limit_sim=80.0, stiffness=2e4, damping=2e3),
+        "L_arm_j4": BaseActuatorCfg(velocity_limit=2.7, effort_limit_sim=80.0, stiffness=1e4, damping=1e3),
+        "L_arm_j5": BaseActuatorCfg(velocity_limit=2.7, effort_limit_sim=25.0, stiffness=5e3, damping=500),
+        "L_arm_j6": BaseActuatorCfg(velocity_limit=2.7, effort_limit_sim=25.0, stiffness=5e3, damping=500),
+        "L_arm_j7": BaseActuatorCfg(velocity_limit=2.7, effort_limit_sim=25.0, stiffness=5e3, damping=500),
         # Right arm - progressive stiffness from base to tip
         "R_arm_j1": BaseActuatorCfg(
-            velocity_limit=2.4, torque_limit=150.0, stiffness=5e4, damping=5e3
+            velocity_limit=2.4, effort_limit_sim=150.0, stiffness=5e4, damping=5e3
         ),  # Increased for stability
         "R_arm_j2": BaseActuatorCfg(
-            velocity_limit=2.4, torque_limit=150.0, stiffness=5e4, damping=5e3
+            velocity_limit=2.4, effort_limit_sim=150.0, stiffness=5e4, damping=5e3
         ),  # Increased for stability
-        "R_arm_j3": BaseActuatorCfg(velocity_limit=2.7, torque_limit=80.0, stiffness=2e4, damping=2e3),
-        "R_arm_j4": BaseActuatorCfg(velocity_limit=2.7, torque_limit=80.0, stiffness=1e4, damping=1e3),
-        "R_arm_j5": BaseActuatorCfg(velocity_limit=2.7, torque_limit=25.0, stiffness=5e3, damping=500),
-        "R_arm_j6": BaseActuatorCfg(velocity_limit=2.7, torque_limit=25.0, stiffness=5e3, damping=500),
-        "R_arm_j7": BaseActuatorCfg(velocity_limit=2.7, torque_limit=25.0, stiffness=5e3, damping=500),
+        "R_arm_j3": BaseActuatorCfg(velocity_limit=2.7, effort_limit_sim=80.0, stiffness=2e4, damping=2e3),
+        "R_arm_j4": BaseActuatorCfg(velocity_limit=2.7, effort_limit_sim=80.0, stiffness=1e4, damping=1e3),
+        "R_arm_j5": BaseActuatorCfg(velocity_limit=2.7, effort_limit_sim=25.0, stiffness=5e3, damping=500),
+        "R_arm_j6": BaseActuatorCfg(velocity_limit=2.7, effort_limit_sim=25.0, stiffness=5e3, damping=500),
+        "R_arm_j7": BaseActuatorCfg(velocity_limit=2.7, effort_limit_sim=25.0, stiffness=5e3, damping=500),
         # Left hand - Thumb
-        "L_th_j0": BaseActuatorCfg(velocity_limit=6.28, torque_limit=1.4, stiffness=300, damping=22),
-        "L_th_j1": BaseActuatorCfg(velocity_limit=6.28, torque_limit=1.4, stiffness=300, damping=22),
-        "L_th_j2": BaseActuatorCfg(velocity_limit=6.28, torque_limit=1.1, stiffness=260, damping=20),
+        "L_th_j0": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=1.4, stiffness=300, damping=22),
+        "L_th_j1": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=1.4, stiffness=300, damping=22),
+        "L_th_j2": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=1.1, stiffness=260, damping=20),
         # Left hand - Fingers
-        "L_ff_j1": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
-        "L_ff_j2": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
-        "L_mf_j1": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
-        "L_mf_j2": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
-        "L_rf_j1": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
-        "L_rf_j2": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
-        "L_lf_j1": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
-        "L_lf_j2": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
+        "L_ff_j1": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
+        "L_ff_j2": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
+        "L_mf_j1": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
+        "L_mf_j2": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
+        "L_rf_j1": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
+        "L_rf_j2": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
+        "L_lf_j1": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
+        "L_lf_j2": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
         # Right hand - Thumb
-        "R_th_j0": BaseActuatorCfg(velocity_limit=6.28, torque_limit=1.4, stiffness=300, damping=22),
-        "R_th_j1": BaseActuatorCfg(velocity_limit=6.28, torque_limit=1.4, stiffness=300, damping=22),
-        "R_th_j2": BaseActuatorCfg(velocity_limit=6.28, torque_limit=1.1, stiffness=260, damping=20),
+        "R_th_j0": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=1.4, stiffness=300, damping=22),
+        "R_th_j1": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=1.4, stiffness=300, damping=22),
+        "R_th_j2": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=1.1, stiffness=260, damping=20),
         # Right hand - Fingers
-        "R_ff_j1": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
-        "R_ff_j2": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
-        "R_mf_j1": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
-        "R_mf_j2": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
-        "R_rf_j1": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
-        "R_rf_j2": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
-        "R_lf_j1": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
-        "R_lf_j2": BaseActuatorCfg(velocity_limit=6.28, torque_limit=0.9, stiffness=320, damping=22),
+        "R_ff_j1": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
+        "R_ff_j2": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
+        "R_mf_j1": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
+        "R_mf_j2": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
+        "R_rf_j1": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
+        "R_rf_j2": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
+        "R_lf_j1": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
+        "R_lf_j2": BaseActuatorCfg(velocity_limit=6.28, effort_limit_sim=0.9, stiffness=320, damping=22),
     }
 
     # ==================== Joint Limits ====================

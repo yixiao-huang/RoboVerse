@@ -73,29 +73,43 @@ class XhandRightCfg(RobotCfg):
     actuators: dict[str, BaseActuatorCfg] = {
         # Thumb
         "right_hand_thumb_bend_joint": BaseActuatorCfg(
-            velocity_limit=8.63, torque_limit=1.1, stiffness=3.0, damping=0.1
+            velocity_limit=8.63, effort_limit_sim=1.1, stiffness=3.0, damping=0.1
         ),
         "right_hand_thumb_rota_joint1": BaseActuatorCfg(
-            velocity_limit=8.63, torque_limit=1.1, stiffness=3.0, damping=0.1
+            velocity_limit=8.63, effort_limit_sim=1.1, stiffness=3.0, damping=0.1
         ),
         "right_hand_thumb_rota_joint2": BaseActuatorCfg(
-            velocity_limit=14.38, torque_limit=0.4, stiffness=3.0, damping=0.1
+            velocity_limit=14.38, effort_limit_sim=0.4, stiffness=3.0, damping=0.1
         ),
         # Index
         "right_hand_index_bend_joint": BaseActuatorCfg(
-            velocity_limit=14.38, torque_limit=0.4, stiffness=3.0, damping=0.1
+            velocity_limit=14.38, effort_limit_sim=0.4, stiffness=3.0, damping=0.1
         ),
-        "right_hand_index_joint1": BaseActuatorCfg(velocity_limit=8.63, torque_limit=1.1, stiffness=3.0, damping=0.1),
-        "right_hand_index_joint2": BaseActuatorCfg(velocity_limit=14.38, torque_limit=0.4, stiffness=3.0, damping=0.1),
+        "right_hand_index_joint1": BaseActuatorCfg(
+            velocity_limit=8.63, effort_limit_sim=1.1, stiffness=3.0, damping=0.1
+        ),
+        "right_hand_index_joint2": BaseActuatorCfg(
+            velocity_limit=14.38, effort_limit_sim=0.4, stiffness=3.0, damping=0.1
+        ),
         # Middle
-        "right_hand_mid_joint1": BaseActuatorCfg(velocity_limit=8.63, torque_limit=1.1, stiffness=3.0, damping=0.1),
-        "right_hand_mid_joint2": BaseActuatorCfg(velocity_limit=14.38, torque_limit=0.4, stiffness=3.0, damping=0.1),
+        "right_hand_mid_joint1": BaseActuatorCfg(velocity_limit=8.63, effort_limit_sim=1.1, stiffness=3.0, damping=0.1),
+        "right_hand_mid_joint2": BaseActuatorCfg(
+            velocity_limit=14.38, effort_limit_sim=0.4, stiffness=3.0, damping=0.1
+        ),
         # Ring
-        "right_hand_ring_joint1": BaseActuatorCfg(velocity_limit=8.63, torque_limit=1.1, stiffness=3.0, damping=0.1),
-        "right_hand_ring_joint2": BaseActuatorCfg(velocity_limit=14.38, torque_limit=0.4, stiffness=3.0, damping=0.1),
+        "right_hand_ring_joint1": BaseActuatorCfg(
+            velocity_limit=8.63, effort_limit_sim=1.1, stiffness=3.0, damping=0.1
+        ),
+        "right_hand_ring_joint2": BaseActuatorCfg(
+            velocity_limit=14.38, effort_limit_sim=0.4, stiffness=3.0, damping=0.1
+        ),
         # Pinky
-        "right_hand_pinky_joint1": BaseActuatorCfg(velocity_limit=8.63, torque_limit=1.1, stiffness=3.0, damping=0.1),
-        "right_hand_pinky_joint2": BaseActuatorCfg(velocity_limit=14.38, torque_limit=0.4, stiffness=3.0, damping=0.1),
+        "right_hand_pinky_joint1": BaseActuatorCfg(
+            velocity_limit=8.63, effort_limit_sim=1.1, stiffness=3.0, damping=0.1
+        ),
+        "right_hand_pinky_joint2": BaseActuatorCfg(
+            velocity_limit=14.38, effort_limit_sim=0.4, stiffness=3.0, damping=0.1
+        ),
     }
 
     # -------- Defaults --------

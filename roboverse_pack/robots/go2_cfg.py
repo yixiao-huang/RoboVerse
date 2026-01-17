@@ -21,18 +21,18 @@ class Go2Cfg(RobotCfg):
     collapse_fixed_joints: bool = True
 
     actuators: dict[str, BaseActuatorCfg] = {
-        "FL_hip_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, torque_limit=23.7),
-        "RL_hip_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, torque_limit=23.7),
-        "FR_hip_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, torque_limit=23.7),
-        "RR_hip_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, torque_limit=23.7),
-        "FL_thigh_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, torque_limit=23.7),
-        "RL_thigh_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, torque_limit=23.7),
-        "FR_thigh_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, torque_limit=23.7),
-        "RR_thigh_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, torque_limit=23.7),
-        "FL_calf_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, torque_limit=35.55),
-        "RL_calf_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, torque_limit=35.55),
-        "FR_calf_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, torque_limit=35.55),
-        "RR_calf_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, torque_limit=35.55),
+        "FL_hip_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, effort_limit_sim=23.7),
+        "RL_hip_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, effort_limit_sim=23.7),
+        "FR_hip_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, effort_limit_sim=23.7),
+        "RR_hip_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, effort_limit_sim=23.7),
+        "FL_thigh_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, effort_limit_sim=23.7),
+        "RL_thigh_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, effort_limit_sim=23.7),
+        "FR_thigh_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, effort_limit_sim=23.7),
+        "RR_thigh_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, effort_limit_sim=23.7),
+        "FL_calf_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, effort_limit_sim=35.55),
+        "RL_calf_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, effort_limit_sim=35.55),
+        "FR_calf_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, effort_limit_sim=35.55),
+        "RR_calf_joint": BaseActuatorCfg(stiffness=20.0, damping=0.5, effort_limit_sim=35.55),
     }
 
     joint_limits: dict[str, tuple[float, float]] = {
