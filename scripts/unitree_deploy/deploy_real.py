@@ -14,20 +14,6 @@ import rootutils
 import torch
 
 rootutils.setup_root(__file__, pythonpath=True)
-from roboverse_pack.tasks.humanoid.unitree_deploy.common.command_helper import (
-    MotorMode,
-    create_damping_cmd,
-    create_zero_cmd,
-    init_cmd_go,
-    init_cmd_hg,
-)
-from roboverse_pack.tasks.humanoid.unitree_deploy.common.remote_controller import KeyMap, RemoteController
-from roboverse_pack.tasks.humanoid.unitree_deploy.common.rotation_helper import (
-    get_gravity_orientation,
-    transform_imu_data,
-)
-from roboverse_pack.tasks.humanoid.unitree_deploy.config import G1Config
-from roboverse_pack.tasks.humanoid.unitree_deploy.utils import get_euler_xyz
 from unitree_sdk2py.core.channel import ChannelFactoryInitialize, ChannelPublisher, ChannelSubscriber
 from unitree_sdk2py.idl.default import (
     unitree_go_msg_dds__LowCmd_,
@@ -40,6 +26,21 @@ from unitree_sdk2py.idl.unitree_go.msg.dds_ import LowState_ as LowStateGo
 from unitree_sdk2py.idl.unitree_hg.msg.dds_ import LowCmd_ as LowCmdHG
 from unitree_sdk2py.idl.unitree_hg.msg.dds_ import LowState_ as LowStateHG
 from unitree_sdk2py.utils.crc import CRC
+
+from scripts.unitree_deploy.common.command_helper import (
+    MotorMode,
+    create_damping_cmd,
+    create_zero_cmd,
+    init_cmd_go,
+    init_cmd_hg,
+)
+from scripts.unitree_deploy.common.remote_controller import KeyMap, RemoteController
+from scripts.unitree_deploy.common.rotation_helper import (
+    get_gravity_orientation,
+    transform_imu_data,
+)
+from scripts.unitree_deploy.config import G1Config
+from scripts.unitree_deploy.utils import get_euler_xyz
 
 logger = logging.getLogger(__name__)
 
@@ -266,14 +267,20 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("net", type=str, help="network interface")
     parser.add_argument("config", type=str, help="config file name in the configs folder", default="g1.yaml")
+    parser.add_argument(
+        "--domain-id",
+        type=int,
+        default=0,
+        help="DDS domain id (use 1+ for simulators to avoid colliding with real robots; default: 0).",
+    )
     args = parser.parse_args()
 
     # # Load config
-    config_path = f"roboverse_pack/tasks/humanoid/unitree_deploy/configs/{args.config}"
+    config_path = f"scripts/unitree_deploy/configs/{args.config}"
     config = G1Config(config_path)
 
     # Initialize DDS communication
-    ChannelFactoryInitialize(0, args.net)
+    ChannelFactoryInitialize(args.domain_id, args.net)
 
     controller = Controller(config)
 
